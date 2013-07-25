@@ -1,0 +1,20 @@
+{
+    "name": "league/twitter",
+    "description": "A Twitter library for the 21st century.",
+    "authors": [
+        {
+            "name": "Phil Sturgeon",
+            "email": "email@philsturgeon.co.uk"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "illuminate/support": "4.0.x"
+    },
+    "autoload": {
+        "psr-0": {
+            "League\\Twitter": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}
