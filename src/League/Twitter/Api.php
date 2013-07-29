@@ -192,10 +192,10 @@ class Api
      * Return twitter user search results for a given term.
      * 
      * @param string $term Term to search by.
-     * @param string $page Page of results to return. Default is 1
-     * @param string $count Number of results to return.  Default is 20
-     * @param string $include_entities If True, each tweet will include a node called "entities"
-     * @return A sequence of twitter.User instances, one for each message containing the term
+     * @param string $page Page of results to return. Default is 1. [Optional]
+     * @param string $count Number of results to return.  Default is 20. [Optional]
+     * @param string $include_entities If True, each tweet will include a node called "entities". [Optional]
+     * @return A sequence of twitter.User instances, one for each message containing the term. [Optional]
      */
     public function getUsersSearch($term, $page = 1, $count = 20, $include_entities = null)
     {
@@ -266,7 +266,7 @@ class Api
      * The League\Twitter\Api instance must be authenticated.
      * 
      * @param int $count Specifies the number of statuses to retrieve. May not be 
-     *  greater than 200. Defaults to 20.
+     *  greater than 200. Defaults to 20. [Optional]
      * @param int $since_id Returns results with an ID greater than (that is, more recent
      *  than) the specified ID. There are limits to the number of
      *  Tweets which can be accessed through the API. If the limit of
@@ -303,7 +303,7 @@ class Api
         $include_entities = true
     ) {
 
-        $url = '%s/statuses/home_timeline.json' % $this->base_url
+        $url = "{$this->base_url}/statuses/home_timeline.json";
 
         if (! $this->_oauth_consumer) {
             throw new Exception("API must be authenticated.");
@@ -313,11 +313,11 @@ class Api
 
         if (! is_null($count) {
             if (! is_numeric($count)) {
-                throw new Exception("'count' must be an integer");
+                throw new \InvalidArgumentException("'count' must be an integer");
             }
 
             if ((int) $count > 200) {
-                throw new Exception("'count' may not be greater than 200");
+                throw new \InvalidArgumentException("'count' may not be greater than 200");
             }
         
             $parameters['count'] = $count;
@@ -325,7 +325,7 @@ class Api
 
         if ($since_id) {
             if (! is_numeric($since_id)) {
-                throw new Exception("'since_id' must be an integer");
+                throw new \InvalidArgumentException("'since_id' must be an integer");
             }
             
             $parameters['since_id'] = (int) $since_id;
@@ -333,7 +333,7 @@ class Api
 
         if ($max_id) {
             if (! is_numeric($max_id)) {
-                throw new Exception("'max_id' must be an integer");
+                throw new \InvalidArgumentException("'max_id' must be an integer");
             }
             
             $parameters['max_id'] = (int) $max_id;
@@ -359,150 +359,147 @@ class Api
         return [Status::newFromJsonDict($x) for $x in data]
     }
 
-    def GetUserTimeline(self,
-                      user_id=null,
-                      screen_name=null,
-                      since_id=null,
-                      max_id=null,
-                      count=null,
-                      include_rts=null,
-                      trim_user=null,
-                      exclude_replies=null):
-    '''Fetch the sequence of public Status messages for a single user.
+    /**
+     * Fetch the sequence of public Status messages for a single user.
+     *
+     * @param int user_id Specifies the ID of the user for whom to return the
+     *  user_timeline. Helpful for disambiguating when a valid user ID
+     *  is also a valid screen name. [Optional]
+     * @param int screen_name Specifies the screen name of the user for whom to return the
+     *  user_timeline. Helpful for disambiguating when a valid screen
+     *  name is also a user ID. [Optional]
+     * @param int $count Specifies the number of statuses to retrieve. May not be 
+     *  greater than 200. Defaults to 20. [Optional]
+     * @param int $since_id Returns results with an ID greater than (that is, more recent
+     *  than) the specified ID. There are limits to the number of
+     *  Tweets which can be accessed through the API. If the limit of
+     *  Tweets has occurred since the since_id, the since_id will be
+     *  forced to the oldest ID available. [Optional]
+     * @param int $max_id Returns results with an ID less than (that is, older than) or
+     *  equal to the specified ID. [Optional]
+     * @param bool include_rts If true, the timeline will contain native retweets (if they
+     *  exist) in addition to the standard stream of tweets. [Optional]
+     * @param bool $trim_user  When true, each tweet returned in a timeline will include a user
+     *  object including only the status authors numerical ID. Omit this
+     *  parameter to receive the complete user object. [Optional]
+     * @param bool $exclude_replies  This parameter will prevent replies from appearing in the
+     *  returned timeline. Using exclude_replies with the count
+     *  parameter will mean you will receive up-to count tweets -
+     *  this is because the count parameter retrieves that many
+     *  tweets before filtering out retweets and replies.
+     *  [Optional]
+     * @return array[League\Twitter\Status] An array of Status instances, one for each message up to count
+     */
+    public function getUserTimeline(
+        $user_id = null,
+        $screen_name = null,
+        $count = null,
+        $since_id = null,
+        $max_id = null,
+        $include_rts = null,
+        $trim_user = null,
+        $exclude_replies = null
+    ) {
 
-    The twitter.Api instance must be authenticated if the user is private.
+        $parameters = {}
 
-    Args:
-      user_id:
-        Specifies the ID of the user for whom to return the
-        user_timeline. Helpful for disambiguating when a valid user ID
-        is also a valid screen name. [Optional]
-      screen_name:
-        Specifies the screen name of the user for whom to return the
-        user_timeline. Helpful for disambiguating when a valid screen
-        name is also a user ID. [Optional]
-      since_id:
-        Returns results with an ID greater than (that is, more recent
-        than) the specified ID. There are limits to the number of
-        Tweets which can be accessed through the API. If the limit of
-        Tweets has occurred since the since_id, the since_id will be
-        forced to the oldest ID available. [Optional]
-      max_id:
-        Returns only statuses with an ID less than (that is, older
-        than) or equal to the specified ID. [Optional]
-      count:
-        Specifies the number of statuses to retrieve. May not be
-        greater than 200.  [Optional]
-      include_rts:
-        If True, the timeline will contain native retweets (if they
-        exist) in addition to the standard stream of tweets. [Optional]
-      trim_user:
-        If True, statuses will only contain the numerical user ID only.
-        Otherwise a full user object will be returned for each status.
-        [Optional]
-      exclude_replies:
-        If True, this will prevent replies from appearing in the returned
-        timeline. Using exclude_replies with the count parameter will mean you
-        will receive up-to count tweets - this is because the count parameter
-        retrieves that many tweets before filtering out retweets and replies.
-        This parameter is only supported for JSON and XML responses. [Optional]
+        $url = "{$this->base_url}/statuses/user_timeline.json";
 
-    Returns:
-      A sequence of Status instances, one for each message up to count
-    '''
-    parameters = {}
+        if ($user_id) {
+            $parameters['user_id'] = $user_id;
+        elseif ($screen_name) {
+            $parameters['screen_name'] = $screen_name;
+        }
+        
+        if ($since_id) {
+            if (! is_numeric($since_id)) {
+                throw new \InvalidArgumentException("'since_id' must be an integer");
+            }
+            $parameters['since_id'] = (int) $since_id;
+        }
 
-    url = '%s/statuses/user_timeline.json' % ($this->base_url)
+        if ($max_id) {
+            if (! is_numeric($max_id)) {
+                throw new \InvalidArgumentException("'max_id' must be an integer");
+            }
+            $parameters['max_id'] = (int) $max_id;
+        }
 
-    if user_id:
-      parameters['user_id'] = user_id
-    elif screen_name:
-      parameters['screen_name'] = screen_name
+        if ($count) {
+            if (! is_numeric($count)) {
+                throw new \InvalidArgumentException("'count' must be an integer");
+            }
+            $parameters['count'] = (int) $count;
+        }
 
-    if since_id:
-      try:
-        parameters['since_id'] = long(since_id)
-      except:
-        raise TwitterError("since_id must be an integer")
+        if ($include_rts) {
+            $parameters['include_rts'] = 1;
+        }
 
-    if max_id:
-      try:
-        parameters['max_id'] = long(max_id)
-      except:
-        raise TwitterError("max_id must be an integer")
+        if ($trim_user) {
+            $parameters['trim_user'] = 1;
+        }
 
-    if count:
-      try:
-        parameters['count'] = int(count)
-      except:
-        raise TwitterError("count must be an integer")
+        if ($exclude_replies) {
+            $parameters['exclude_replies'] = 1;
+        }
 
-    if include_rts:
-      parameters['include_rts'] = 1
+        $json = $this->fetchUrl($url, $parameters)
+        $data = $this->parseAndCheckTwitter($json)
+        return [Status.NewFromJsonDict($x) for $x in $data]
+    }
 
-    if trim_user:
-      parameters['trim_user'] = 1
+    /**
+     * Returns a single status message, specified by the id parameter.
+     *
+     * The League\Twitter\Api instance must be authenticated.
+     *
+     * @param int $id The numeric ID of the status you are trying to retrieve.
+     * @param bool $trim_user When set to True, each tweet returned in a timeline will 
+     *  include a user object including only the status authors numerical ID.
+     *  Omit this parameter to receive the complete user object. [Optional]
+     * @param bool $include_my_retweet When set to True, any Tweets returned that have 
+     * been retweeted by the authenticating user will include an additional
+     *  current_user_retweet node, containing the ID of the source status for the retweet. [Optional]
+     * @param bool $include_entities If false, the entities node will be disincluded.
+     *  This node offers a variety of metadata about the tweet in a discreet structure, 
+     * including: user_mentions, urls, and hashtags. [Optional]
+     * 
+     * @return League\Twitter\Instance Instance representing that status message.
+     */
+    public function getStatus(
+        $id,
+        $trim_user = false,
+        $include_my_retweet = true,
+        $include_entities = true
+    ) {
+        $url = "{$this->base_url}/statuses/show.json";
 
-    if exclude_replies:
-      parameters['exclude_replies'] = 1
+        if (! $this->_oauth_consumer) {
+            throw new Exception("API must be authenticated.");
+        }
 
-    json = $this->_FetchUrl(url, parameters=parameters)
-    data = $this->_ParseAndCheckTwitter(json)
-    return [Status.NewFromJsonDict(x) for x in data]
+        if (! is_numeric($id)) {
+            throw new \InvalidArgumentException("'id' must be an integer");
+        }
+        
+        $parameters = array('id' => (int) $id);
 
-    def GetStatus(self,
-                id,
-                trim_user=false,
-                include_my_retweet=True,
-                include_entities=True):
-    '''Returns a single status message, specified by the id parameter.
+        if ($trim_user) {
+            $parameters['trim_user'] = 1;
+        }
+        if ($include_my_retweet) {
+            $parameters['include_my_retweet'] = 1;
+        }
+        if (! $include_entities) {
+            $parameters['include_entities'] = 'none';
+        }
 
-    The twitter.Api instance must be authenticated.
-
-    Args:
-      id:
-        The numeric ID of the status you are trying to retrieve.
-      trim_user:
-        When set to True, each tweet returned in a timeline will include
-        a user object including only the status authors numerical ID.
-        Omit this parameter to receive the complete user object.
-        [Optional]
-      include_my_retweet:
-        When set to True, any Tweets returned that have been retweeted by
-        the authenticating user will include an additional
-        current_user_retweet node, containing the ID of the source status
-        for the retweet. [Optional]
-      include_entities:
-        If false, the entities node will be disincluded.
-        This node offers a variety of metadata about the tweet in a
-        discreet structure, including: user_mentions, urls, and
-        hashtags. [Optional]
-    Returns:
-      A twitter.Status instance representing that status message
-    '''
-    url  = '%s/statuses/show.json' % ($this->base_url)
-
-    if not $this->_oauth_consumer:
-      raise TwitterError("API must be authenticated.")
-
-    parameters = {}
-
-    try:
-      parameters['id'] = long(id)
-    except ValueError:
-      raise TwitterError("'id' must be an integer.")
-
-    if trim_user:
-      parameters['trim_user'] = 1
-    if include_my_retweet:
-      parameters['include_my_retweet'] = 1
-    if not include_entities:
-      parameters['include_entities'] = 'none'
-
-    json = $this->_FetchUrl(url, parameters=parameters)
-    data = $this->_ParseAndCheckTwitter(json)
-    return Status.NewFromJsonDict(data)
-
+        $json = $this->fetchUrl($url, $parameters);
+        $data = $this->parseAndCheckTwitter($json);
+        return Status::newFromJsonDict($data);
+    }
+    
     def DestroyStatus(self, id, trim_user=false):
     '''Destroys the status specified by the required ID parameter.
 
