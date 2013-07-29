@@ -19,7 +19,7 @@ class Api
     protected $signature_method_hmac_sha1;
 
     /**
-     * Instantiate a new League\Twitter\Api object
+     * Constructor
      */
     public function __construct(
         $consumer_key = null,
@@ -219,137 +219,145 @@ class Api
         return [User.NewFromJsonDict(x) for x in $data];
     }
 
-    def GetTrendsCurrent(self, exclude=null):
-    '''Get the current top trending topics (global)
+    /**
+     * Get the current top trending topics
+     * 
+     * @param array $exclude Appends the exclude parameter as a request parameter.
+     * @return array[Trend] An array with 10 entries. Each entry contains a trend.
+     */
+    public function getTrendsCurrent($exclude = null)
+    {
+        return $this->GetTrendsWoeid(id=1, exclude=exclude)
+    }
 
-    Args:
-      exclude:
-        Appends the exclude parameter as a request parameter.
-        Currently only exclude=hashtags is supported. [Optional]
+    /**
+     * Return the top 10 trending topics for a specific WOEID
+     * 
+     * @param array $woeid The Yahoo! Where On Earth ID for a location.
+     * @param array $exclude Appends the exclude parameter as a request parameter.
+     * @return array[Trend] An array with 10 entries. Each entry contains a trend.
+     */
+    public function getTrendsWoeid($woeid, $exclude = null)
+    {
+        $url  = "{$this->base_url}/trends/place.json";
+        $parameters = array('id' => $woeid);
 
-    Returns:
-      A list with 10 entries. Each entry contains a trend.
-    '''
-    return $this->GetTrendsWoeid(id=1, exclude=exclude)
+        if ($exclude) {
+            $parameters['exclude'] = $exclude;
+        }
 
-    def GetTrendsWoeid(self, id, exclude=null):
-    '''Return the top 10 trending topics for a specific WOEID, if trending
-    information is available for it.
+        $json = $this->fetchUrl($url, $parameters)
+        $data = $this->parseAndCheckTwitter($json)
 
-    Args:
-      woeid:
-        the Yahoo! Where On Earth ID for a location.
-      exclude:
-        Appends the exclude parameter as a request parameter.
-        Currently only exclude=hashtags is supported. [Optional]
+        $trends = []
+        $timestamp = data[0]['as_of']
 
-    Returns:
-      A list with 10 entries. Each entry contains a trend.
-    '''
-    url  = '%s/trends/place.json' % ($this->base_url)
-    parameters = {'id': id}
+        foreach ($data[0]['trends'] as $trend) {
+            $trends[] = Trend::newFromJsonDict($trend, $timestamp));
+        }
 
-    if exclude:
-      parameters['exclude'] = exclude
+        return $trends;
+    }
 
-    json = $this->_FetchUrl(url, parameters=parameters)
-    data = $this->_ParseAndCheckTwitter(json)
+    /**
+     * Fetch a collection of the most recent Tweets and Retweets posted by the
+     * authenticating user and the users they follow.
+     * 
+     * The League\Twitter\Api instance must be authenticated.
+     * 
+     * @param int $count Specifies the number of statuses to retrieve. May not be 
+     *  greater than 200. Defaults to 20.
+     * @param int $since_id Returns results with an ID greater than (that is, more recent
+     *  than) the specified ID. There are limits to the number of
+     *  Tweets which can be accessed through the API. If the limit of
+     *  Tweets has occurred since the since_id, the since_id will be
+     *  forced to the oldest ID available. [Optional]
+     * @param int $max_id Returns results with an ID less than (that is, older than) or
+     *  equal to the specified ID. [Optional]
+     * @param bool $trim_user  When true, each tweet returned in a timeline will include a user
+     *  object including only the status authors numerical ID. Omit this
+     *  parameter to receive the complete user object. [Optional]
+     * @param bool $exclude_replies  This parameter will prevent replies from appearing in the
+     *  returned timeline. Using exclude_replies with the count
+     *  parameter will mean you will receive up-to count tweets -
+     *  this is because the count parameter retrieves that many
+     *  tweets before filtering out retweets and replies.
+     *  [Optional]
+     * @param bool $contributor_details  This parameter enhances the contributors element of the
+     *  status response to include the screen_name of the contributor.
+     *  By default only the user_id of the contributor is included.
+     *  [Optional]
+     * @param bool $include_entities  The entities node will be disincluded when set to false.
+     *  This node offers a variety of metadata about the tweet in a
+     *  discreet structure, including: user_mentions, urls, and
+     *  hashtags. [Optional]
+     * @return array[League\Twitter\Status] An array of Status instances, one for each message.
+     */
+    public function getHomeTimeline(
+        $count = null,
+        $since_id = null,
+        $max_id = null,
+        $trim_user = false,
+        $exclude_replies = false,
+        $contributor_details = false,
+        $include_entities = true
+    ) {
 
-    trends = []
-    timestamp = data[0]['as_of']
+        $url = '%s/statuses/home_timeline.json' % $this->base_url
 
-    for trend in data[0]['trends']:
-        trends.append(Trend.NewFromJsonDict(trend, timestamp = timestamp))
-    return trends
+        if (! $this->_oauth_consumer) {
+            throw new Exception("API must be authenticated.");
+        }
+        
+        $parameters = array();
 
-    def GetHomeTimeline(self,
-                         count=null,
-                         since_id=null,
-                         max_id=null,
-                         trim_user=false,
-                         exclude_replies=false,
-                         contributor_details=false,
-                         include_entities=True):
-    '''
-    Fetch a collection of the most recent Tweets and retweets posted by the
-    authenticating user and the users they follow.
+        if (! is_null($count) {
+            if (! is_numeric($count)) {
+                throw new Exception("'count' must be an integer");
+            }
 
-    The home timeline is central to how most users interact with the Twitter
-    service.
+            if ((int) $count > 200) {
+                throw new Exception("'count' may not be greater than 200");
+            }
+        
+            $parameters['count'] = $count;
+        }
 
-    The twitter.Api instance must be authenticated.
+        if ($since_id) {
+            if (! is_numeric($since_id)) {
+                throw new Exception("'since_id' must be an integer");
+            }
+            
+            $parameters['since_id'] = (int) $since_id;
+        }
 
-    Args:
-      count:
-        Specifies the number of statuses to retrieve. May not be
-        greater than 200. Defaults to 20. [Optional]
-      since_id:
-        Returns results with an ID greater than (that is, more recent
-        than) the specified ID. There are limits to the number of
-        Tweets which can be accessed through the API. If the limit of
-        Tweets has occurred since the since_id, the since_id will be
-        forced to the oldest ID available. [Optional]
-      max_id:
-        Returns results with an ID less than (that is, older than) or
-        equal to the specified ID. [Optional]
-      trim_user:
-        When True, each tweet returned in a timeline will include a user
-        object including only the status authors numerical ID. Omit this
-        parameter to receive the complete user object. [Optional]
-      exclude_replies:
-        This parameter will prevent replies from appearing in the
-        returned timeline. Using exclude_replies with the count
-        parameter will mean you will receive up-to count tweets -
-        this is because the count parameter retrieves that many
-        tweets before filtering out retweets and replies.
-        [Optional]
-      contributor_details:
-        This parameter enhances the contributors element of the
-        status response to include the screen_name of the contributor.
-        By default only the user_id of the contributor is included.
-        [Optional]
-      include_entities:
-        The entities node will be disincluded when set to false.
-        This node offers a variety of metadata about the tweet in a
-        discreet structure, including: user_mentions, urls, and
-        hashtags. [Optional]
+        if ($max_id) {
+            if (! is_numeric($max_id)) {
+                throw new Exception("'max_id' must be an integer");
+            }
+            
+            $parameters['max_id'] = (int) $max_id;
+        }
 
-    Returns:
-      A sequence of twitter.Status instances, one for each message
-    '''
-    url = '%s/statuses/home_timeline.json' % $this->base_url
+        if ($trim_user) {
+            $parameters['trim_user'] = 1;
+        }
 
-    if not $this->_oauth_consumer:
-      raise TwitterError("API must be authenticated.")
-    parameters = {}
-    if count is not null:
-      try:
-        if int(count) > 200:
-          raise TwitterError("'count' may not be greater than 200")
-      except ValueError:
-        raise TwitterError("'count' must be an integer")
-      parameters['count'] = count
-    if since_id:
-      try:
-        parameters['since_id'] = long(since_id)
-      except ValueError:
-        raise TwitterError("'since_id' must be an integer")
-    if max_id:
-      try:
-        parameters['max_id'] = long(max_id)
-      except ValueError:
-        raise TwitterError("'max_id' must be an integer")
-    if trim_user:
-      parameters['trim_user'] = 1
-    if exclude_replies:
-      parameters['exclude_replies'] = 1
-    if contributor_details:
-      parameters['contributor_details'] = 1
-    if not include_entities:
-      parameters['include_entities'] = 'false'
-    json = $this->_FetchUrl(url, parameters=parameters)
-    data = $this->_ParseAndCheckTwitter(json)
-    return [Status.NewFromJsonDict(x) for x in data]
+        if ($exclude_replies) {
+            $parameters['exclude_replies'] = 1;
+        }
+
+        if ($contributor_details) {
+            $parameters['contributor_details'] = 1;
+        }
+
+        if (! $include_entities) {
+            $parameters['include_entities'] = 'false';
+        }
+        $json = $this->_FetchUrl(url, $parameters);
+        $data = $this->_ParseAndCheckTwitter($json);
+        return [Status::newFromJsonDict($x) for $x in data]
+    }
 
     def GetUserTimeline(self,
                       user_id=null,
