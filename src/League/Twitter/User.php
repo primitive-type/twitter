@@ -573,7 +573,7 @@ class User
 
     public function asArray()
     {
-        data = array();
+        $data = array();
         $json = $this->__toString();
 	$data = json_decode($json, true);
 	foreach($data as $key => $value) {
