@@ -491,54 +491,75 @@ class User
         $this->favourites_count = $favourites_count;
     }
 
-  def getGeoEnabled(self):
-    return self._geo_enabled
+    public function getGeoEnabled()
+    {
+        return $this->geo_enabled;
+    }
 
-  def setGeoEnabled(self, geo_enabled):
-    self._geo_enabled = geo_enabled
+    public function setGeoEnabled($geo_enabled)
+    {
+        $this->geo_enabled = $geo_enabled;
+    }
 
+    public function getVerified()
+    {
+        return $this->verified;
+    }
 
-  def getVerified(self):
-    return self._verified
+    public function setVerified($verified)
+    {
+        $this->verified = $verified;
+    }
 
-  def setVerified(self, verified):
-    self._verified = verified
+    public function getLang()
+    {
+        return $this->lang;
+    }
 
+    public function setLang($lang)
+    {
+        $this->lang = $lang;
+    }
 
-  def getLang(self):
-    return self._lang
+    public function getNotifications()
+    {
+        return $this->notifications;
+    }
 
-  def setLang(self, lang):
-    self._lang = lang
+    public function setNotifications($notifications)
+    {
+        $this->notifications = $notifications;
+    }
 
+    public function getContributorsEnabled()
+    {
+        return $this->contributors_enabled;
+    }
 
-  def getNotifications(self):
-    return self._notifications
+    public function setContributorsEnabled($contributors_enabled)
+    {
+        $this->contributors_enabled = $contributors_enabled;
+    }
 
-  def setNotifications(self, notifications):
-    self._notifications = notifications
+    public function getCreatedAt()
+    {
+        return $this->created_at;
+    }
 
+    public function setCreatedAt($created_at)
+    {
+        $this->created_at = $created_at;
+    }
 
-  def getContributorsEnabled(self):
-    return self._contributors_enabled
+    public function __ne__($other)
+    {
+        return not $this->__eq__(other)
+    }
 
-  def setContributorsEnabled(self, contributors_enabled):
-    self._contributors_enabled = contributors_enabled
-
-
-  def getCreatedAt(self):
-    return self._created_at
-
-  def setCreatedAt(self, created_at):
-    self._created_at = created_at
-
-
-  def __ne__(self, other):
-    return not self.__eq__(other)
-
-  def __eq__(self, other):
+    public function __eq__($other)
+    {
     try:
-      return other and \
+          return other and \
              self.id == other.id and \
              self.name == other.name and \
              self.screen_name == other.screen_name and \
@@ -569,108 +590,117 @@ class User
              self.listed_count == other.listed_count
 
     except AttributeError:
-      return False
+          return False
+    }
 
-  def __str__(self):
+    public function __str__()
+    {
     '''A string representation of this twitter.User instance.
 
-    The return value is the same as the JSON string representation.
+    The     return value is the same as the JSON string representation.
 
-    Returns:
+        returns:
       A string representation of this twitter.User instance.
     '''
-    return self.AsJsonString()
+        return self.AsJsonString()
+    }
 
-  def AsJsonString(self):
+    public function AsJsonString()
+    {
     '''A JSON string representation of this twitter.User instance.
 
-    Returns:
+        returns:
       A JSON string representation of this twitter.User instance
    '''
-    return simplejson.dumps(self.AsDict(), sort_keys=True)
+        return simplejson.dumps(.AsDict(), sort_keys=True)
+    }
 
-  def AsDict(self):
+    public function AsDict()
+    {
     '''A dict representation of this twitter.User instance.
 
-    The return value uses the same key names as the JSON representation.
+    The     return value uses the same key names as the JSON representation.
 
-    Return:
+        return:
       A dict representing this twitter.User instance
     '''
-    data = {}
+    data = $
+    {}
     if self.id:
-      data['id'] = self.id
+      data['id'] = $self.id
     if self.name:
-      data['name'] = self.name
+      data['name'] = $self.name
     if self.screen_name:
-      data['screen_name'] = self.screen_name
+      data['screen_name'] = $self.screen_name
     if self.location:
-      data['location'] = self.location
+      data['location'] = $self.location
     if self.description:
-      data['description'] = self.description
+      data['description'] = $self.description
     if self.profile_image_url:
-      data['profile_image_url'] = self.profile_image_url
+      data['profile_image_url'] = $self.profile_image_url
     if self.profile_background_tile is not None:
-      data['profile_background_tile'] = self.profile_background_tile
+      data['profile_background_tile'] = $self.profile_background_tile
     if self.profile_background_image_url:
-      data['profile_sidebar_fill_color'] = self.profile_background_image_url
+      data['profile_sidebar_fill_color'] = $self.profile_background_image_url
     if self.profile_background_color:
-      data['profile_background_color'] = self.profile_background_color
+      data['profile_background_color'] = $self.profile_background_color
     if self.profile_link_color:
-      data['profile_link_color'] = self.profile_link_color
+      data['profile_link_color'] = $self.profile_link_color
     if self.profile_text_color:
-      data['profile_text_color'] = self.profile_text_color
+      data['profile_text_color'] = $self.profile_text_color
     if self.protected is not None:
-      data['protected'] = self.protected
+      data['protected'] = $self.protected
     if self.utc_offset:
-      data['utc_offset'] = self.utc_offset
+      data['utc_offset'] = $self.utc_offset
     if self.time_zone:
-      data['time_zone'] = self.time_zone
+      data['time_zone'] = $self.time_zone
     if self.url:
-      data['url'] = self.url
+      data['url'] = $self.url
     if self.status:
-      data['status'] = self.status.AsDict()
+      data['status'] = $self.status.AsDict()
     if self.friends_count:
-      data['friends_count'] = self.friends_count
+      data['friends_count'] = $self.friends_count
     if self.followers_count:
-      data['followers_count'] = self.followers_count
+      data['followers_count'] = $self.followers_count
     if self.statuses_count:
-      data['statuses_count'] = self.statuses_count
+      data['statuses_count'] = $self.statuses_count
     if self.favourites_count:
-      data['favourites_count'] = self.favourites_count
+      data['favourites_count'] = $self.favourites_count
     if self.geo_enabled:
-      data['geo_enabled'] = self.geo_enabled
+      data['geo_enabled'] = $self.geo_enabled
     if self.verified:
-      data['verified'] = self.verified
+      data['verified'] = $self.verified
     if self.lang:
-      data['lang'] = self.lang
+      data['lang'] = $self.lang
     if self.notifications:
-      data['notifications'] = self.notifications
+      data['notifications'] = $self.notifications
     if self.contributors_enabled:
-      data['contributors_enabled'] = self.contributors_enabled
+      data['contributors_enabled'] = $self.contributors_enabled
     if self.created_at:
-      data['created_at'] = self.created_at
+      data['created_at'] = $self.created_at
     if self.listed_count:
-      data['listed_count'] = self.listed_count
+      data['listed_count'] = $self.listed_count
 
-    return data
+        return data
 
-  @staticmethod
-  def NewFromJsonDict(data):
+  @staticmethod    }
+
+    public function NewFromJsonDict(data)
+    {
     '''Create a new instance based on a JSON dict.
 
     Args:
       data:
         A JSON dict, as converted from the JSON in the twitter API
 
-    Returns:
+        returns:
       A twitter.User instance
     '''
     if 'status' in data:
-      status = Status.NewFromJsonDict(data['status'])
+      status = $Status.NewFromJsonDict(data['status'])
     else:
-      status = None
-    return User(id=data.get('id', None),
+      status = $None
+        return User(id=data.get('id', None),
                 name=data.get('name', None),
                 screen_name=data.get('screen_name', None),
                 location=data.get('location', None),
@@ -680,15 +710,15 @@ class User
                 favourites_count=data.get('favourites_count', None),
                 friends_count=data.get('friends_count', None),
                 profile_image_url=data.get('profile_image_url_https', data.get('profile_image_url', None)),
-                profile_background_tile = data.get('profile_background_tile', None),
-                profile_background_image_url = data.get('profile_background_image_url', None),
-                profile_sidebar_fill_color = data.get('profile_sidebar_fill_color', None),
-                profile_background_color = data.get('profile_background_color', None),
-                profile_link_color = data.get('profile_link_color', None),
-                profile_text_color = data.get('profile_text_color', None),
-                protected = data.get('protected', None),
-                utc_offset = data.get('utc_offset', None),
-                time_zone = data.get('time_zone', None),
+                profile_background_tile = $data.get('profile_background_tile', None),
+                profile_background_image_url = $data.get('profile_background_image_url', None),
+                profile_sidebar_fill_color = $data.get('profile_sidebar_fill_color', None),
+                profile_background_color = $data.get('profile_background_color', None),
+                profile_link_color = $data.get('profile_link_color', None),
+                profile_text_color = $data.get('profile_text_color', None),
+                protected = $data.get('protected', None),
+                utc_offset = $data.get('utc_offset', None),
+                time_zone = $data.get('time_zone', None),
                 url=data.get('url', None),
                 status=status,
                 geo_enabled=data.get('geo_enabled', None),
