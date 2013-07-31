@@ -31,6 +31,10 @@ class User
     protected $contributors_enabled;
     protected $created_at;
     protected $listed_count;
+
+    /**
+     * Constructor
+     */
     public function __construct(
         $id = null,
         $name = null,
@@ -61,34 +65,35 @@ class User
         $created_at = null,
         $listed_count = null
     ) {
-    $this->id = $id;
-    $this->name = $name;
-    $this->screen_name = $screen_name;
-    $this->location = $location;
-    $this->description = $description;
-    $this->profile_image_url = $profile_image_url;
-    $this->profile_background_tile = $profile_background_tile;
-    $this->profile_background_image_url = $profile_background_image_url;
-    $this->profile_sidebar_fill_color = $profile_sidebar_fill_color;
-    $this->profile_background_color = $profile_background_color;
-    $this->profile_link_color = $profile_link_color;
-    $this->profile_text_color = $profile_text_color;
-    $this->protected = $protected;
-    $this->utc_offset = $utc_offset;
-    $this->time_zone = $time_zone;
-    $this->followers_count = $followers_count;
-    $this->friends_count = $friends_count;
-    $this->statuses_count = $statuses_count;
-    $this->favourites_count = $favourites_count;
-    $this->url = $url;
-    $this->status = $status;
-    $this->geo_enabled = $geo_enabled;
-    $this->verified = $verified;
-    $this->lang = $lang;
-    $this->notifications = $notifications;
-    $this->contributors_enabled = $contributors_enabled;
-    $this->created_at = $created_at;
-    $this->listed_count = $listed_count;
+        $this->id = $id;
+        $this->name = $name;
+        $this->screen_name = $screen_name;
+        $this->location = $location;
+        $this->description = $description;
+        $this->profile_image_url = $profile_image_url;
+        $this->profile_background_tile = $profile_background_tile;
+        $this->profile_background_image_url = $profile_background_image_url;
+        $this->profile_sidebar_fill_color = $profile_sidebar_fill_color;
+        $this->profile_background_color = $profile_background_color;
+        $this->profile_link_color = $profile_link_color;
+        $this->profile_text_color = $profile_text_color;
+        $this->protected = $protected;
+        $this->utc_offset = $utc_offset;
+        $this->time_zone = $time_zone;
+        $this->followers_count = $followers_count;
+        $this->friends_count = $friends_count;
+        $this->statuses_count = $statuses_count;
+        $this->favourites_count = $favourites_count;
+        $this->url = $url;
+        $this->status = $status;
+        $this->geo_enabled = $geo_enabled;
+        $this->verified = $verified;
+        $this->lang = $lang;
+        $this->notifications = $notifications;
+        $this->contributors_enabled = $contributors_enabled;
+        $this->created_at = $created_at;
+        $this->listed_count = $listed_count;
+    }
 
     /**
      * @returns $id
