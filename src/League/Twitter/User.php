@@ -551,58 +551,14 @@ class User
         $this->created_at = $created_at;
     }
 
-    public function __ne__($other)
+    public function isEqual($other)
     {
-        return not $this->__eq__(other)
+        return ($this == $other);
     }
 
-    public function __eq__($other)
+    public function __toString()
     {
-    try:
-          return other and \
-             self.id == other.id and \
-             self.name == other.name and \
-             self.screen_name == other.screen_name and \
-             self.location == other.location and \
-             self.description == other.description and \
-             self.profile_image_url == other.profile_image_url and \
-             self.profile_background_tile == other.profile_background_tile and \
-             self.profile_background_image_url == other.profile_background_image_url and \
-             self.profile_sidebar_fill_color == other.profile_sidebar_fill_color and \
-             self.profile_background_color == other.profile_background_color and \
-             self.profile_link_color == other.profile_link_color and \
-             self.profile_text_color == other.profile_text_color and \
-             self.protected == other.protected and \
-             self.utc_offset == other.utc_offset and \
-             self.time_zone == other.time_zone and \
-             self.url == other.url and \
-             self.statuses_count == other.statuses_count and \
-             self.followers_count == other.followers_count and \
-             self.favourites_count == other.favourites_count and \
-             self.friends_count == other.friends_count and \
-             self.status == other.status and \
-             self.geo_enabled == other.geo_enabled and \
-             self.verified == other.verified and \
-             self.lang == other.lang and \
-             self.notifications == other.notifications and \
-             self.contributors_enabled == other.contributors_enabled and \
-             self.created_at == other.created_at and \
-             self.listed_count == other.listed_count
-
-    except AttributeError:
-          return False
-    }
-
-    public function __str__()
-    {
-    '''A string representation of this twitter.User instance.
-
-    The     return value is the same as the JSON string representation.
-
-        returns:
-      A string representation of this twitter.User instance.
-    '''
-        return self.AsJsonString()
+        return json_encode($this);
     }
 
     public function AsJsonString()
@@ -615,75 +571,18 @@ class User
         return simplejson.dumps(.AsDict(), sort_keys=True)
     }
 
-    public function AsDict()
+    public function asArray()
     {
-    '''A dict representation of this twitter.User instance.
-
-    The     return value uses the same key names as the JSON representation.
-
-        return:
-      A dict representing this twitter.User instance
-    '''
-    data = $
-    {}
-    if self.id:
-      data['id'] = $self.id
-    if self.name:
-      data['name'] = $self.name
-    if self.screen_name:
-      data['screen_name'] = $self.screen_name
-    if self.location:
-      data['location'] = $self.location
-    if self.description:
-      data['description'] = $self.description
-    if self.profile_image_url:
-      data['profile_image_url'] = $self.profile_image_url
-    if self.profile_background_tile is not None:
-      data['profile_background_tile'] = $self.profile_background_tile
-    if self.profile_background_image_url:
-      data['profile_sidebar_fill_color'] = $self.profile_background_image_url
-    if self.profile_background_color:
-      data['profile_background_color'] = $self.profile_background_color
-    if self.profile_link_color:
-      data['profile_link_color'] = $self.profile_link_color
-    if self.profile_text_color:
-      data['profile_text_color'] = $self.profile_text_color
-    if self.protected is not None:
-      data['protected'] = $self.protected
-    if self.utc_offset:
-      data['utc_offset'] = $self.utc_offset
-    if self.time_zone:
-      data['time_zone'] = $self.time_zone
-    if self.url:
-      data['url'] = $self.url
-    if self.status:
-      data['status'] = $self.status.AsDict()
-    if self.friends_count:
-      data['friends_count'] = $self.friends_count
-    if self.followers_count:
-      data['followers_count'] = $self.followers_count
-    if self.statuses_count:
-      data['statuses_count'] = $self.statuses_count
-    if self.favourites_count:
-      data['favourites_count'] = $self.favourites_count
-    if self.geo_enabled:
-      data['geo_enabled'] = $self.geo_enabled
-    if self.verified:
-      data['verified'] = $self.verified
-    if self.lang:
-      data['lang'] = $self.lang
-    if self.notifications:
-      data['notifications'] = $self.notifications
-    if self.contributors_enabled:
-      data['contributors_enabled'] = $self.contributors_enabled
-    if self.created_at:
-      data['created_at'] = $self.created_at
-    if self.listed_count:
-      data['listed_count'] = $self.listed_count
-
-        return data
-
-  @staticmethod    }
+        data = array();
+        $json = $this->__toString();
+	$data = json_decode($json, true);
+	foreach($data as $key => $value) {
+	    if($value == "") {
+	        unset($data[$key]);
+	    }
+	}
+        return $data;
+    }
 
     public function NewFromJsonDict(data)
     {
