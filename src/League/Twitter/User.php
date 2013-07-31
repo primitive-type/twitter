@@ -272,7 +272,7 @@ class User
 
     /**
      * @returns $profile_background_color
-     * Returns profile background color url of the user
+     * Returns profile background color of the user
      */
     public function getProfileBackgroundColor()
     {
@@ -283,271 +283,248 @@ class User
      * @param $profile_background_color
      * Set profile background color to specified value
      */
-    public function SetProfileBackgroundColor($profile_background_color)
+    public function setProfileBackgroundColor($profile_background_color)
     {
         $this->profile_background_color = $profile_background_color;
     }
 
     /**
      * @returns $profile_link_color
-     * Returns profile link color url of the user
+     * Returns profile link color of the user
      */
-    public function GetProfileLinkColor()
+    public function getProfileLinkColor()
     {
         return $this->profile_link_color;
     }
 
-  def SetProfileLinkColor(self, profile_link_color):
-    self._profile_link_color = profile_link_color
+    /**
+     * @param $profile_link_color
+     * Set profile link color to specified value
+     */
+    public function setProfileLinkColor($profile_link_color)
+    {
+        $this->profile_link_color = $profile_link_color;
+    }
 
-  def GetProfileTextColor(self):
-    return self._profile_text_color
+    /**
+     * @returns $profile_text_color
+     * Returns profile text color of the user
+     */
+    public function getProfileTextColor()
+    {
+        return $this->profile_text_color;
+    }
 
-  def SetProfileTextColor(self, profile_text_color):
-    self._profile_text_color = profile_text_color
+    /**
+     * @param $profile_text_color
+     * Set profile text color to specified value
+     */
+    public function setProfileTextColor($profile_text_color)
+    {
+        $this->profile_text_color = $profile_text_color;
+    }
 
-  def GetProtected(self):
-    return self._protected
+    /**
+     * @returns $protected
+     * Returns protected status of the user
+     */
+    public function getProtected()
+    {
+        return $this->protected;
+    }
 
-  def SetProtected(self, protected):
-    self._protected = protected
+    /**
+     * @param $protected
+     * Set protected status to specified value
+     */
+    public function setProtected($protected)
+    {
+        $this->protected = $protected;
+    }
 
-  def GetUtcOffset(self):
-    return self._utc_offset
+    /**
+     * @returns $utc_offset
+     * Returns the UTC offset of the user
+     */
+    public function getUtcOffset()
+    {
+        return $this->utc_offset;
+    }
 
-  def SetUtcOffset(self, utc_offset):
-    self._utc_offset = utc_offset
+    /**
+     * @param $utc_offset
+     * Set UTC offset to specified value
+     */
+    public function setUtcOffset($utc_offset)
+    {
+        $this->utc_offset = $utc_offset;
+    }
 
-  def GetTimeZone(self):
-    '''Returns the current time zone string for the user.
+    /**
+     * @returns $time_zone
+     * Returns time zone of the user
+     */
+    public function getTimeZone()
+    {
+        return $this->time_zone;
+    }
 
-    Returns:
-      The descriptive time zone string for the user.
-    '''
-    return self._time_zone
+    /**
+     * @param $time_zone
+     * Set time zone to specified value
+     */
+    public function setTimeZone($time_zone)
+    {
+        $this->time_zone = $time_zone;
+    }
 
-  def SetTimeZone(self, time_zone):
-    '''Sets the user's time zone string.
+    /**
+     * @returns $status
+     * Returns most recent status of the user
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
 
-    Args:
-      time_zone:
-        The descriptive time zone to assign for the user.
-    '''
-    self._time_zone = time_zone
+    /**
+     * @param $status
+     * Set status of specified value
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    }
 
-  def GetStatus(self):
-    '''Get the latest twitter.Status of this user.
+    /**
+     * @returns $friends_count
+     * Returns the friend count of the user
+     */
+    public function getFriendsCount()
+    {
+        return $this->friends_count;
+    }
 
-    Returns:
-      The latest twitter.Status of this user
-    '''
-    return self._status
+    /**
+     * @param $friends_count
+     * Set the friends_count to specified value
+     */
+    public function setFriendsCount($count)
+    {
+        $this->friends_count = $count;
+    }
 
-  def SetStatus(self, status):
-    '''Set the latest twitter.Status of this user.
+    /**
+     * @returns $listed_count
+     * Returns the number of lists the user is a member of
+     */
+    public function getListedCount()
+    {
+        return $this->listed_count;
+    }
 
-    Args:
-      status:
-        The latest twitter.Status of this user
-    '''
-    self._status = status
+    /**
+     * @param $listed_count
+     * Set the number of lists the user is a member of
+     */
+    public function setListedCount($listed_count)
+    {
+        $this->listed_count = $listed_count;
+    }
 
+    /**
+     * @returns $followers_count
+     * Returns the number of followers the user has
+     */
+    public function getFollowersCount()
+    {
+        return $this->followers_count;
+    }
 
-  def GetFriendsCount(self):
-    '''Get the friend count for this user.
+    /**
+     * @param $followers_count
+     * Set number of followers the user has
+     */
+    public function setFollowersCount($followers_count)
+    {
+        $this->followers_count = $followers_count;
+    }
 
-    Returns:
-      The number of users this user has befriended.
-    '''
-    return self._friends_count
+    /**
+     * @returns $statuses_count
+     * Returns the number of status updates the user has made
+     */
+    public function getStatusesCount()
+    {
+        return $this->statuses_count;
+    }
 
-  def SetFriendsCount(self, count):
-    '''Set the friend count for this user.
+    /**
+     * @param $statuses_count
+     * Set protected status to specified value 
+     */
+    public function setStatusesCount($statuses_count)
+    {
+        $this->statuses_count = $statuses_count;
+    }
 
-    Args:
-      count:
-        The number of users this user has befriended.
-    '''
-    self._friends_count = count
+    /**
+     * @returns $favourites_count
+     * Get the number of favourites for this user.
+     */
+    public function getFavouritesCount()
+    {
+        return $this->favourites_count;
+    }
 
+    /**
+     * @param $favourites_count
+     * Set protected status to specified value
+     */
+    public function setFavouritesCount($count)
+    {
+        $this->favourites_count = $favourites_count;
+    }
 
-  def GetListedCount(self):
-    '''Get the listed count for this user.
-
-    Returns:
-      The number of lists this user belongs to.
-    '''
-    return self._listed_count
-
-  def SetListedCount(self, count):
-    '''Set the listed count for this user.
-
-    Args:
-      count:
-        The number of lists this user belongs to.
-    '''
-    self._listed_count = count
-
-
-  def GetFollowersCount(self):
-    '''Get the follower count for this user.
-
-    Returns:
-      The number of users following this user.
-    '''
-    return self._followers_count
-
-  def SetFollowersCount(self, count):
-    '''Set the follower count for this user.
-
-    Args:
-      count:
-        The number of users following this user.
-    '''
-    self._followers_count = count
-
-
-  def GetStatusesCount(self):
-    '''Get the number of status updates for this user.
-
-    Returns:
-      The number of status updates for this user.
-    '''
-    return self._statuses_count
-
-  def SetStatusesCount(self, count):
-    '''Set the status update count for this user.
-
-    Args:
-      count:
-        The number of updates for this user.
-    '''
-    self._statuses_count = count
-
-
-  def GetFavouritesCount(self):
-    '''Get the number of favourites for this user.
-
-    Returns:
-      The number of favourites for this user.
-    '''
-    return self._favourites_count
-
-  def SetFavouritesCount(self, count):
-    '''Set the favourite count for this user.
-
-    Args:
-      count:
-        The number of favourites for this user.
-    '''
-    self._favourites_count = count
-
-
-  def GetGeoEnabled(self):
-    '''Get the setting of geo_enabled for this user.
-
-    Returns:
-      True/False if Geo tagging is enabled
-    '''
+  def getGeoEnabled(self):
     return self._geo_enabled
 
-  def SetGeoEnabled(self, geo_enabled):
-    '''Set the latest twitter.geo_enabled of this user.
-
-    Args:
-      geo_enabled:
-        True/False if Geo tagging is to be enabled
-    '''
+  def setGeoEnabled(self, geo_enabled):
     self._geo_enabled = geo_enabled
 
 
-  def GetVerified(self):
-    '''Get the setting of verified for this user.
-
-    Returns:
-      True/False if user is a verified account
-    '''
+  def getVerified(self):
     return self._verified
 
-  def SetVerified(self, verified):
-    '''Set twitter.verified for this user.
-
-    Args:
-      verified:
-        True/False if user is a verified account
-    '''
+  def setVerified(self, verified):
     self._verified = verified
 
 
-  def GetLang(self):
-    '''Get the setting of lang for this user.
-
-    Returns:
-      language code of the user
-    '''
+  def getLang(self):
     return self._lang
 
-  def SetLang(self, lang):
-    '''Set twitter.lang for this user.
-
-    Args:
-      lang:
-        language code for the user
-    '''
+  def setLang(self, lang):
     self._lang = lang
 
 
-  def GetNotifications(self):
-    '''Get the setting of notifications for this user.
-
-    Returns:
-      True/False for the notifications setting of the user
-    '''
+  def getNotifications(self):
     return self._notifications
 
-  def SetNotifications(self, notifications):
-    '''Set twitter.notifications for this user.
-
-    Args:
-      notifications:
-        True/False notifications setting for the user
-    '''
+  def setNotifications(self, notifications):
     self._notifications = notifications
 
 
-  def GetContributorsEnabled(self):
-    '''Get the setting of contributors_enabled for this user.
-
-    Returns:
-      True/False contributors_enabled of the user
-    '''
+  def getContributorsEnabled(self):
     return self._contributors_enabled
 
-  def SetContributorsEnabled(self, contributors_enabled):
-    '''Set twitter.contributors_enabled for this user.
-
-    Args:
-      contributors_enabled:
-        True/False contributors_enabled setting for the user
-    '''
+  def setContributorsEnabled(self, contributors_enabled):
     self._contributors_enabled = contributors_enabled
 
 
-  def GetCreatedAt(self):
-    '''Get the setting of created_at for this user.
-
-    Returns:
-      created_at value of the user
-    '''
+  def getCreatedAt(self):
     return self._created_at
 
-  def SetCreatedAt(self, created_at):
-    '''Set twitter.created_at for this user.
-
-    Args:
-      created_at:
-        created_at value for the user
-    '''
+  def setCreatedAt(self, created_at):
     self._created_at = created_at
 
 
