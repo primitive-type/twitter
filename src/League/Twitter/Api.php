@@ -7,6 +7,8 @@ class Api
   
     private const API_REALM = 'Twitter API';
 
+    private const CHARACTER_LIMIT = 140;
+
     protected $consumer_key;
     protected $consumer_secret;
     protected $access_token_key;
@@ -61,7 +63,7 @@ class Api
     }
 
     /**
-     * Set the consumer_key and consumer_secret for this instance
+     * Set the consumer_key and consumer_secret for this instance.
      *
      * @param string consumer_key The consumer_key of the twitter account.
      * @param string consumer_secret The consumer_secret for the twitter account.
@@ -93,6 +95,115 @@ class Api
         $this->oauth_consumer = oauth.Consumer(key=consumer_key, secret=consumer_secret)
     }
 
+
+    /**
+     * Fetch a URL, optionally caching for a specified time.
+     *
+     * @param string $url URL to retrieve.
+     * @param string $method HTTP Method, only GET or POST are acceptable.
+     * @param array $parameters An array of key/value data for POST/GET params.
+     * @param bool $no_cache If true, overrides the cache on the current request.
+     * @param bool $use_gzip_compression If True, tells the server to gzip-compress the 
+     *   response. It does not apply to POST requests. Defaults to null, which will get 
+     *   the value to use from the instance variable $this->_use_gzip.
+     * @return string
+     */
+    protected function fetchUrl(
+        $url,
+        $http_method = 'GET',
+        array $parameters = null,
+        $no_cache = null,
+        $use_gzip_compression = null
+    ) {
+   
+        $extra_params = $this->_default_params;
+
+        if ($parameters) {
+            $extra_params = array_merge($extra_params, $parameters);
+        }
+
+        $debug = (bool) $this->_debug_http;
+
+        http_handler  = self._urllib.HTTPHandler(debuglevel=_debug)
+        https_handler = self._urllib.HTTPSHandler(debuglevel=_debug)
+        http_proxy = os.environ.get('http_proxy')
+        https_proxy = os.environ.get('https_proxy')
+
+        if http_proxy is None or  https_proxy is None :
+          proxy_status = False
+        else :
+          proxy_status = True
+
+        opener = self._urllib.OpenerDirector()
+        opener.add_handler(http_handler)
+        opener.add_handler(https_handler)
+
+        if proxy_status is True :
+          proxy_handler = self._urllib.ProxyHandler({'http':str(http_proxy),'https': str(https_proxy)})
+          opener.add_handler(proxy_handler)
+
+        if use_gzip_compression is None:
+          use_gzip = self._use_gzip
+        else:
+          use_gzip = use_gzip_compression
+
+        # Set up compression
+        if use_gzip and not post_data:
+          opener.addheaders.append(('Accept-Encoding', 'gzip'))
+
+        if self._oauth_consumer is not None:
+          if post_data and http_method == "POST":
+            parameters = post_data.copy()
+
+          req = oauth.Request.from_consumer_and_token(self._oauth_consumer,
+                                                      token=self._oauth_token,
+                                                      http_method=http_method,
+                                                      http_url=url, parameters=parameters)
+
+          req.sign_request(self._signature_method_hmac_sha1, self._oauth_consumer, self._oauth_token)
+
+          headers = req.to_header()
+
+          if http_method == "POST":
+            encoded_post_data = req.to_postdata()
+          else:
+            encoded_post_data = None
+            url = req.to_url()
+        else:
+          url = self._BuildUrl(url, extra_params=extra_params)
+          encoded_post_data = self._EncodePostData(post_data)
+
+        # Open and return the URL immediately if we're not going to cache
+        if encoded_post_data or no_cache or not self._cache or not self._cache_timeout:
+          response = opener.open(url, encoded_post_data)
+          url_data = self._DecompressGzippedResponse(response)
+          opener.close()
+        else:
+          # Unique keys are a combination of the url and the oAuth Consumer Key
+          if self._consumer_key:
+            key = self._consumer_key + ':' + url
+          else:
+            key = url
+
+          # See if it has been cached before
+          last_cached = self._cache.GetCachedTime(key)
+
+          # If the cached version is outdated then fetch another and store it
+          if not last_cached or time.time() >= last_cached + self._cache_timeout:
+            try:
+              response = opener.open(url, encoded_post_data)
+              url_data = self._DecompressGzippedResponse(response)
+              self._cache.Set(key, url_data)
+            except urllib2.HTTPError, e:
+              print e
+            opener.close()
+          else:
+            url_data = self._cache.Get(key)
+
+        # Always return the latest version
+        return url_data
+    }
+
     /**
      * Clear the any credentials for this instance.
      */
@@ -118,7 +229,7 @@ class Api
      * @param string $locale Language of the search query. Currently only 'ja' is effective.
      * @param string $result_type Type of result which should be returned. "mixed", "recent" and "popular"
      * @param string $include_entities If true, each tweet will include a node called "entities"
-     * @return array An array of League\Twitter\Status instances, one for each message containing the term
+     * @return array[League\Twitter\Status]
      */
     public function getSearch(
         $term = null,
@@ -195,7 +306,7 @@ class Api
      * @param string $page Page of results to return. Default is 1. [Optional]
      * @param string $count Number of results to return.  Default is 20. [Optional]
      * @param string $include_entities If True, each tweet will include a node called "entities". [Optional]
-     * @return A sequence of twitter.User instances, one for each message containing the term. [Optional]
+     * @return array[League\Twitter\User]
      */
     public function getUsersSearch($term, $page = 1, $count = 20, $include_entities = null)
     {
@@ -223,7 +334,7 @@ class Api
      * Get the current top trending topics
      * 
      * @param array $exclude Appends the exclude parameter as a request parameter.
-     * @return array[Trend] An array with 10 entries. Each entry contains a trend.
+     * @return array[League\Twitter\Trend]
      */
     public function getTrendsCurrent($exclude = null)
     {
@@ -235,7 +346,7 @@ class Api
      * 
      * @param array $woeid The Yahoo! Where On Earth ID for a location.
      * @param array $exclude Appends the exclude parameter as a request parameter.
-     * @return array[Trend] An array with 10 entries. Each entry contains a trend.
+     * @return array[League\Twitter\Trend]
      */
     public function getTrendsWoeid($woeid, $exclude = null)
     {
@@ -291,7 +402,7 @@ class Api
      *  This node offers a variety of metadata about the tweet in a
      *  discreet structure, including: user_mentions, urls, and
      *  hashtags. [Optional]
-     * @return array[League\Twitter\Status] An array of Status instances, one for each message.
+     * @return array[League\Twitter\Status]
      */
     public function getHomeTimeline(
         $count = null,
@@ -388,7 +499,7 @@ class Api
      *  this is because the count parameter retrieves that many
      *  tweets before filtering out retweets and replies.
      *  [Optional]
-     * @return array[League\Twitter\Status] An array of Status instances, one for each message up to count
+     * @return array[League\Twitter\Status]
      */
     public function getUserTimeline(
         $user_id = null,
@@ -465,7 +576,7 @@ class Api
      *  This node offers a variety of metadata about the tweet in a discreet structure, 
      * including: user_mentions, urls, and hashtags. [Optional]
      * 
-     * @return League\Twitter\Instance Instance representing that status message.
+     * @return League\Twitter\Instance
      */
     public function getStatus(
         $id,
@@ -500,147 +611,174 @@ class Api
         return Status::newFromJsonDict($data);
     }
     
-    def DestroyStatus(self, id, trim_user=false):
-    '''Destroys the status specified by the required ID parameter.
+    /**
+     * Destroys the status specified by the required ID parameter.
+     *
+     * The League\Twitter\Api instance must be authenticated.
+     *
+     * @param int $id The numeric ID of the status you are trying to retrieve.
+     * @param bool $trim_user When set to True, each tweet returned in a timeline will 
+     *  include a user object including only the status authors numerical ID.
+     *  Omit this parameter to receive the complete user object. [Optional]
+     *
+     * @return League\Twitter\Status
+     */
+    public function destroyStatus($id, $trim_user = false)
+    {
+        if (! $this->_oauth_consumer) {
+            raise TwitterError("API must be authenticated.")
+        }
 
-    The twitter.Api instance must be authenticated and the
-    authenticating user must be the author of the specified status.
+        if (! is_numeric($id)) {
+            throw new \InvalidArgumentException("'id' must be an integer");
+        }
 
-    Args:
-      id:
-        The numerical ID of the status you're trying to destroy.
+        $post_data = array('id': (int) $id);
 
-    Returns:
-      A twitter.Status instance representing the destroyed status message
-    '''
-    if not $this->_oauth_consumer:
-      raise TwitterError("API must be authenticated.")
+        url  = "{$this->base_url}/statuses/destroy/{$id}.json";
+        
+        if ($trim_user) {
+            $post_data['trim_user'] = 1;
+        }
 
-    try:
-      post_data = {'id': long(id)}
-    except:
-      raise TwitterError("id must be an integer")
-    url  = '%s/statuses/destroy/%s.json' % ($this->base_url, id)
-    if trim_user:
-      post_data['trim_user'] = 1
-    json = $this->_FetchUrl(url, post_data=post_data)
-    data = $this->_ParseAndCheckTwitter(json)
-    return Status.NewFromJsonDict(data)
+        $json = $this->fetchUrl($url, $post_data);
+        $data = $this->parseAndCheckTwitter($json);
+        return Status::newFromJsonArray($data);
+    }
 
-    @classmethod
-    def _calculate_status_length(cls, status, linksize=19):
-    dummy_link_replacement = 'https://-%d-chars%s/' % (linksize, '-'*(linksize - 18))
-    shortened = ' '.join([x if not (x.startswith('http://') or
-                                    x.startswith('https://'))
-                            else
-                                dummy_link_replacement
-                            for x in status.split(' ')])
-    return len(shortened)
+    protected function calculateStatusLength($cls, $status, $linksize = 19) {
+        $dummy_link = sprintf('https://-%d-chars%s/', $linksize, str_repeat('-', $linksize - 18));
+        
+        $parts = array_map(function($part) use ($dummy_link) {
 
-    def PostUpdate(self, status, in_reply_to_status_id=null, latitude=null, longitude=null, place_id=null, display_coordinates=false, trim_user=false):
-    '''Post a twitter status message from the authenticated user.
+            // If its not a URL, carry on with whatever it is
+            if ( ! (strpos($part, 'http://') or strpos($part, 'https://'))) {
+                return $part;
 
-    The twitter.Api instance must be authenticated.
+            // It is a URL, return the dummy link
+            } else {
+                return $dummy_link;
+            }
 
-    https://dev.twitter.com/docs/api/1.1/post/statuses/update
+        }, explode(' ', $status));
 
-    Args:
-      status:
-        The message text to be posted.
-        Must be less than or equal to 140 characters.
-      in_reply_to_status_id:
-        The ID of an existing status that the status to be posted is
-        in reply to.  This implicitly sets the in_reply_to_user_id
-        attribute of the resulting status to the user ID of the
-        message being replied to.  Invalid/missing status IDs will be
-        ignored. [Optional]
-      latitude:
-        Latitude coordinate of the tweet in degrees. Will only work
-        in conjunction with longitude argument. Both longitude and
-        latitude will be ignored by twitter if the user has a false
-        geo_enabled setting. [Optional]
-      longitude:
-        Longitude coordinate of the tweet in degrees. Will only work
-        in conjunction with latitude argument. Both longitude and
-        latitude will be ignored by twitter if the user has a false
-        geo_enabled setting. [Optional]
-      place_id:
-        A place in the world. These IDs can be retrieved from
-        GET geo/reverse_geocode. [Optional]
-      display_coordinates:
-        Whether or not to put a pin on the exact coordinates a tweet
-        has been sent from. [Optional]
-      trim_user:
-        If True the returned payload will only contain the user IDs,
-        otherwise the payload will contain the full user data item.
-        [Optional]
-    Returns:
-      A twitter.Status instance representing the message posted.
-    '''
-    if not $this->_oauth_consumer:
-      raise TwitterError("The twitter.Api instance must be authenticated.")
+        return strlen(implode(' ', $parts));
+    }
 
-    url = '%s/statuses/update.json' % $this->base_url
+    /**
+     * Post a twitter status message from the authenticated user.
+     *
+     * The League\Twitter\Api instance must be authenticated.
+     *
+     * @link https://dev.twitter.com/docs/api/1.1/post/statuses/update
+     *
+     * @param string $status The message text to be posted. Must be less 
+     *   than or equal to 140 characters.
+     * @param int in_reply_to_status_id The ID of an existing status that the status to 
+     *   be posted is in reply to.  This implicitly sets the in_reply_to_user_id
+     *   attribute of the resulting status to the user ID of the message being replied 
+     *   to. Invalid/missing status IDs will be ignored. [Optional]
+     * @param float $latitude Latitude coordinate of the tweet in degrees. 
+     *   Will only work in conjunction with longitude argument. Both longitude and
+     *   latitude will be ignored by twitter if the user has a false
+     *   geo_enabled setting. [Optional]
+     * @param float $longitude Longitude coordinate of the tweet in degrees. 
+     *   Will only work in conjunction with latitude argument. Both longitude and
+     *   latitude will be ignored by twitter if the user has a false
+     *   geo_enabled setting. [Optional]
+     * @param string $place_id A place in the world. These IDs can 
+     * be retrieved from ET geo/reverse_geocode. [Optional]
+     * @param bool $display_coordinates Whether or not to put a pin on the exact 
+     *   coordinates a tweet as been sent from. [Optional]
+     * @param bool $trim_user If True the returned payload will only contain the 
+     *   user IDs, se the payload will contain the full user data item. [Optional]
+     * @return League\Twitter\Status
+     */
+    public postUpdate(
+        $status,
+        $in_reply_to_status_id = null,
+        $latitude = null,
+        $longitude = null,
+        $place_id = null,
+        $display_coordinates = false,
+        $trim_user = false
+    ) {
 
-    if isinstance(status, unicode) or $this->_input_encoding is null:
-      u_status = status
-    else:
-      u_status = unicode(status, $this->_input_encoding)
+        if (! $this->_oauth_consumer) {
+            throw new Exception("The twitter.Api instance must be authenticated.");
+        }
 
-    #if $this->_calculate_status_length(u_status, $this->_shortlink_size) > CHARACTER_LIMIT:
-    #  raise TwitterError("Text must be less than or equal to %d characters. "
-    #                     "Consider using PostUpdates." % CHARACTER_LIMIT)
+        $url = "{$this->base_url}/statuses/update.json");
 
-    data = {'status': status}
-    if in_reply_to_status_id:
-      data['in_reply_to_status_id'] = in_reply_to_status_id
-    if latitude is not null and longitude is not null:
-      data['lat']     = str(latitude)
-      data['long']    = str(longitude)
-    if place_id is not null:
-      data['place_id'] = str(place_id)
-    if display_coordinates:
-      data['display_coordinates'] = 'true'
-    if trim_user:
-      data['trim_user'] = 'true'
-    json = $this->_FetchUrl(url, post_data=data)
-    data = $this->_ParseAndCheckTwitter(json)
-    return Status.NewFromJsonDict(data)
+        if (is_null($this->_input_encoding)) {
+            $u_status = status;
+        } else {
+            $u_status = unicode(status, $this->_input_encoding);
+        }
 
-    def PostUpdates(self, status, continuation=null, **kwargs):
-    '''Post one or more twitter status messages from the authenticated user.
+        if ($this->calculateStatusLength(u_status, $this->_shortlink_size) > static::CHARACTER_LIMIT:
+            throw new Exception("Text must be less than or equal to {static::CHARACTER_LIMIT} characters. ");
+        }
 
-    Unlike api.PostUpdate, this method will post multiple status updates
-    if the message is longer than 140 characters.
+        $data = array('status' => status);
+        if ($in_reply_to_status_id) {
+            $data['in_reply_to_status_id'] = $in_reply_to_status_id;
+        }
+        if (! (is_null($latitude) or is_null($longitude))) {
+            $data['lat']     = (string) $latitude;
+            $data['long']    = (string) $longitude;
+        }
+        if (! (is_null($place_id))) {
+            $data['place_id'] = (string) $place_id;
+        }
+        if ($display_coordinates) {
+            $data['display_coordinates'] = 'true';
+        }
+        if ($trim_user) {
+            $data['trim_user'] = 'true';
+        }
+        $json = $this->fetchUrl($url, $data);
+        $data = $this->parseAndCheckTwitter($json);
+        return Status::newFromJsonArray($data);
+    }
 
-    The twitter.Api instance must be authenticated.
+    /**
+     * Post one or more twitter status messages from the authenticated user.
+     *
+     * Unlike api.PostUpdate, this method will post multiple status updates
+     * if the message is longer than 140 characters.
+     *
+     * The League\Twitter\Api instance must be authenticated.
+     *
+     * @link https://dev.twitter.com/docs/api/1.1/post/statuses/update
+     *
+     * @param string $status The message text to be posted. May be longer than 140 characters.
+     * @param string $continuation The character string, if any, to be appended to all but the
+     *   last message.  Note that Twitter strips trailing '...' strings from messages.  
+     *   Consider using the unicode \u2026 character (horizontal ellipsis) instead.
+     * @param array args See League\Twitter::postUpdate() for a list of accepted parameters.
+     * @return League\Twitter\Status
+     */
+    public function postUpdates($status, $continuation = null, array $args = null) {
 
-    Args:
-      status:
-        The message text to be posted.
-        May be longer than 140 characters.
-      continuation:
-        The character string, if any, to be appended to all but the
-        last message.  Note that Twitter strips trailing '...' strings
-        from messages.  Consider using the unicode \u2026 character
-        (horizontal ellipsis) instead. [Defaults to null]
-      **kwargs:
-        See api.PostUpdate for a list of accepted parameters.
+        $results = array();
 
-    Returns:
-      A of list twitter.Status instance representing the messages posted.
-    '''
-    results = list()
-    if continuation is null:
-      continuation = ''
-    line_length = CHARACTER_LIMIT - len(continuation)
-    lines = textwrap.wrap(status, line_length)
-    for line in lines[0:-1]:
-      results.append($this->PostUpdate(line + continuation, **kwargs))
-    results.append($this->PostUpdate(lines[-1], **kwargs))
-    return results
+        if (is_null($continuation)) {
+            $continuation = '';
+        }
+        
+        $line_length = static::CHARACTER_LIMIT - strlen($continuation);
+        $lines = $this->wordWrap($status, $line_length);
 
-    def PostRetweet(self, original_id, trim_user=false):
+        $last_line = array_pop($lines);
+        foreach ($lines as $line) {
+            $results[] = $this->postUpdate($line.$continuation, $args);
+        }
+        $results[] = $this->postUpdate($last_line, $args);
+        return $results;
+    }
+
+    public function postRetweet(original_id, trim_user=false):
     '''Retweet a tweet with the Retweet API.
 
     The twitter.Api instance must be authenticated.
@@ -656,8 +794,8 @@ class Api
     Returns:
       A twitter.Status instance representing the original tweet with retweet details embedded.
     '''
-    if not $this->_oauth_consumer:
-      raise TwitterError("The twitter.Api instance must be authenticated.")
+    if (! $this->_oauth_consumer) {
+        throw new Exception("The twitter.Api instance must be authenticated.");
 
     try:
       if int(original_id) <= 0:
@@ -668,13 +806,13 @@ class Api
     url = '%s/statuses/retweet/%s.json' % ($this->base_url, original_id)
 
     data = {'id': original_id}
-    if trim_user:
+    if ($trim_user) {
       data['trim_user'] = 'true'
-    json = $this->_FetchUrl(url, post_data=data)
-    data = $this->_ParseAndCheckTwitter(json)
-    return Status.NewFromJsonDict(data)
+    $json = $this->fetchUrl($url, $data)
+    $data = $this->parseAndCheckTwitter($json);
+    return Status::newFromJsonArray($data);
 
-    def GetUserRetweets(self, count=null, since_id=null, max_id=null, trim_user=false):
+    def GetUserRetweets(count=null, since_id=null, max_id=null, trim_user=false):
     '''Fetch the sequence of retweets made by the authenticated user.
 
     The twitter.Api instance must be authenticated.
@@ -701,7 +839,7 @@ class Api
     '''
     return $this->GetUserTimeline(since_id=since_id, count=count, max_id=max_id, trim_user=trim_user, exclude_replies=True, include_rts=True)
 
-    def GetReplies(self, since_id=null, count=null, max_id=null, trim_user=false):
+    def GetReplies(since_id=null, count=null, max_id=null, trim_user=false):
     '''Get a sequence of status messages representing the 20 most
     recent replies (status updates prefixed with @twitterID) to the
     authenticating user.
@@ -726,7 +864,7 @@ class Api
     '''
     return $this->GetUserTimeline(since_id=since_id, count=count, max_id=max_id, trim_user=trim_user, exclude_replies=false, include_rts=false)
 
-    def GetRetweets(self, statusid, count=null, trim_user=false):
+    def GetRetweets(statusid, count=null, trim_user=false):
     '''Returns up to 100 of the first retweets of the tweet identified
     by statusid
 
@@ -743,11 +881,11 @@ class Api
     Returns:
       A list of twitter.Status instances, which are retweets of statusid
     '''
-    if not $this->_oauth_consumer:
+    if (! $this->_oauth_consumer) {
       raise TwitterError("The twitter.Api instsance must be authenticated.")
     url = '%s/statuses/retweets/%s.json' % ($this->base_url, statusid)
     parameters = {}
-    if trim_user:
+    if ($trim_user) {
       parameters['trim_user'] = 'true'
     if count:
       try:
@@ -755,7 +893,7 @@ class Api
       except:
         raise TwitterError("count must be an integer")
     json = $this->_FetchUrl(url, parameters=parameters)
-    data = $this->_ParseAndCheckTwitter(json)
+    $data = $this->parseAndCheckTwitter($json);
     return [Status.NewFromJsonDict(s) for s in data]
 
     def GetRetweetsOfMe(self,
@@ -783,8 +921,8 @@ class Api
       include_user_entities:
         When True, the user entities will be included.
     '''
-    if not $this->_oauth_consumer:
-      raise TwitterError("The twitter.Api instance must be authenticated.")
+    if (! $this->_oauth_consumer) {
+        throw new Exception("The twitter.Api instance must be authenticated.");
     url = '%s/statuses/retweets_of_me.json' % $this->base_url
     parameters = {}
     if count is not null:
@@ -799,17 +937,17 @@ class Api
       parameters['since_id'] = since_id
     if max_id:
       parameters['max_id'] = max_id
-    if trim_user:
+    if ($trim_user) {
       parameters['trim_user'] = trim_user
     if not include_entities:
       parameters['include_entities'] = include_entities
     if not include_user_entities:
       parameters['include_user_entities'] = include_user_entities
     json = $this->_FetchUrl(url, parameters=parameters)
-    data = $this->_ParseAndCheckTwitter(json)
+    $data = $this->parseAndCheckTwitter($json);
     return [Status.NewFromJsonDict(s) for s in data]
 
-    def GetFriends(self, user_id=null, screen_name=null, cursor=-1, skip_status=false, include_user_entities=false):
+    def GetFriends(user_id=null, screen_name=null, cursor=-1, skip_status=false, include_user_entities=false):
     '''Fetch the sequence of twitter.User instances, one for each friend.
 
     The twitter.Api instance must be authenticated.
@@ -833,7 +971,7 @@ class Api
     Returns:
       A sequence of twitter.User instances, one for each friend
     '''
-    if not $this->_oauth_consumer:
+    if (! $this->_oauth_consumer) {
       raise TwitterError("twitter.Api instance must be authenticated")
     url = '%s/friends/list.json' % $this->base_url
     result = []
@@ -849,7 +987,7 @@ class Api
     while True:
       parameters['cursor'] = cursor
       json = $this->_FetchUrl(url, parameters=parameters)
-      data = $this->_ParseAndCheckTwitter(json)
+      $data = $this->parseAndCheckTwitter($json);
       result += [User.NewFromJsonDict(x) for x in data['users']]
       if 'next_cursor' in data:
         if data['next_cursor'] == 0 or data['next_cursor'] == data['previous_cursor']:
@@ -860,7 +998,7 @@ class Api
         break
     return result
 
-    def GetFriendIDs(self, user_id=null, screen_name=null, cursor=-1, stringify_ids=false, count=null):
+    def GetFriendIDs(user_id=null, screen_name=null, cursor=-1, stringify_ids=false, count=null):
       '''Returns a list of twitter user id's for every person
       the specified user is following.
 
@@ -885,7 +1023,7 @@ class Api
         A list of integers, one for each user id.
       '''
       url = '%s/friends/ids.json' % $this->base_url
-      if not $this->_oauth_consumer:
+      if (! $this->_oauth_consumer) {
           raise TwitterError("twitter.Api instance must be authenticated")
       parameters = {}
       if user_id is not null:
@@ -900,7 +1038,7 @@ class Api
       while True:
         parameters['cursor'] = cursor
         json = $this->_FetchUrl(url, parameters=parameters)
-        data = $this->_ParseAndCheckTwitter(json)
+        $data = $this->parseAndCheckTwitter($json);
         result += [x for x in data['ids']]
         if 'next_cursor' in data:
           if data['next_cursor'] == 0 or data['next_cursor'] == data['previous_cursor']:
@@ -912,7 +1050,7 @@ class Api
       return result
 
 
-    def GetFollowerIDs(self, user_id=null, screen_name=null, cursor=-1, stringify_ids=false, count=null):
+    def GetFollowerIDs(user_id=null, screen_name=null, cursor=-1, stringify_ids=false, count=null):
       '''Returns a list of twitter user id's for every person
       that is following the specified user.
 
@@ -938,7 +1076,7 @@ class Api
         A list of integers, one for each user id.
       '''
       url = '%s/followers/ids.json' % $this->base_url
-      if not $this->_oauth_consumer:
+      if (! $this->_oauth_consumer) {
           raise TwitterError("twitter.Api instance must be authenticated")
       parameters = {}
       if user_id is not null:
@@ -953,7 +1091,7 @@ class Api
       while True:
         parameters['cursor'] = cursor
         json = $this->_FetchUrl(url, parameters=parameters)
-        data = $this->_ParseAndCheckTwitter(json)
+        $data = $this->parseAndCheckTwitter($json);
         result += [x for x in data['ids']]
         if 'next_cursor' in data:
           if data['next_cursor'] == 0 or data['next_cursor'] == data['previous_cursor']:
@@ -964,7 +1102,7 @@ class Api
           break
       return result
 
-    def GetFollowers(self, user_id=null, screen_name=null, cursor=-1, skip_status=false, include_user_entities=false):
+    def GetFollowers(user_id=null, screen_name=null, cursor=-1, skip_status=false, include_user_entities=false):
     '''Fetch the sequence of twitter.User instances, one for each follower
 
     The twitter.Api instance must be authenticated.
@@ -988,7 +1126,7 @@ class Api
     Returns:
       A sequence of twitter.User instances, one for each follower
     '''
-    if not $this->_oauth_consumer:
+    if (! $this->_oauth_consumer) {
       raise TwitterError("twitter.Api instance must be authenticated")
     url = '%s/followers/list.json' % $this->base_url
     result = []
@@ -1004,7 +1142,7 @@ class Api
     while True:
       parameters['cursor'] = cursor
       json = $this->_FetchUrl(url, parameters=parameters)
-      data = $this->_ParseAndCheckTwitter(json)
+      $data = $this->parseAndCheckTwitter($json);
       result += [User.NewFromJsonDict(x) for x in data['users']]
       if 'next_cursor' in data:
         if data['next_cursor'] == 0 or data['next_cursor'] == data['previous_cursor']:
@@ -1015,7 +1153,7 @@ class Api
         break
     return result
 
-    def UsersLookup(self, user_id=null, screen_name=null, users=null, include_entities=True):
+    def UsersLookup(user_id=null, screen_name=null, users=null, include_entities=True):
     '''Fetch extended information for the specified users.
 
     Users may be specified either as lists of either user_ids,
@@ -1043,8 +1181,8 @@ class Api
       A list of twitter.User objects for the requested users
     '''
 
-    if not $this->_oauth_consumer:
-      raise TwitterError("The twitter.Api instance must be authenticated.")
+    if (! $this->_oauth_consumer) {
+        throw new Exception("The twitter.Api instance must be authenticated.");
     if not user_id and not screen_name and not users:
       raise TwitterError("Specify at least one of user_id, screen_name, or users.")
     url = '%s/users/lookup.json' % $this->base_url
@@ -1062,7 +1200,7 @@ class Api
       parameters['include_entities'] = 'false'
     json = $this->_FetchUrl(url, parameters=parameters)
     try:
-      data = $this->_ParseAndCheckTwitter(json)
+      $data = $this->parseAndCheckTwitter($json);
     except TwitterError as e:
         t = e.args[0]
         if len(t) == 1 and ('code' in t[0]) and (t[0]['code'] == 34):
@@ -1072,7 +1210,7 @@ class Api
 
     return [User.NewFromJsonDict(u) for u in data]
 
-    def GetUser(self, user_id=null, screen_name=null, include_entities=True):
+    def GetUser(user_id=null, screen_name=null, include_entities=True):
     '''Returns a single user.
 
     The twitter.Api instance must be authenticated.
@@ -1096,8 +1234,8 @@ class Api
     url  = '%s/users/show.json' % ($this->base_url)
     parameters = {}
 
-    if not $this->_oauth_consumer:
-      raise TwitterError("The twitter.Api instance must be authenticated.")
+    if (! $this->_oauth_consumer) {
+        throw new Exception("The twitter.Api instance must be authenticated.");
 
     if user_id:
       parameters['user_id'] = user_id
@@ -1110,10 +1248,10 @@ class Api
       parameters['include_entities'] = 'false'
 
     json = $this->_FetchUrl(url, parameters=parameters)
-    data = $this->_ParseAndCheckTwitter(json)
+    $data = $this->parseAndCheckTwitter($json);
     return User.NewFromJsonDict(data)
 
-    def GetDirectMessages(self, since_id=null, max_id=null, count=null, include_entities=True, skip_status=false):
+    def GetDirectMessages(since_id=null, max_id=null, count=null, include_entities=True, skip_status=false):
     '''Returns a list of the direct messages sent to the authenticating user.
 
     The twitter.Api instance must be authenticated.
@@ -1144,8 +1282,8 @@ class Api
       A sequence of twitter.DirectMessage instances
     '''
     url = '%s/direct_messages.json' % $this->base_url
-    if not $this->_oauth_consumer:
-      raise TwitterError("The twitter.Api instance must be authenticated.")
+    if (! $this->_oauth_consumer) {
+        throw new Exception("The twitter.Api instance must be authenticated.");
     parameters = {}
     if since_id:
       parameters['since_id'] = since_id
@@ -1161,10 +1299,10 @@ class Api
     if skip_status:
       parameters['skip_status'] = 1
     json = $this->_FetchUrl(url, parameters=parameters)
-    data = $this->_ParseAndCheckTwitter(json)
+    $data = $this->parseAndCheckTwitter($json);
     return [DirectMessage.NewFromJsonDict(x) for x in data]
 
-    def GetSentDirectMessages(self, since_id=null, max_id=null, count=null, page=null, include_entities=True):
+    def GetSentDirectMessages(since_id=null, max_id=null, count=null, page=null, include_entities=True):
     '''Returns a list of the direct messages sent by the authenticating user.
 
     The twitter.Api instance must be authenticated.
@@ -1195,8 +1333,8 @@ class Api
       A sequence of twitter.DirectMessage instances
     '''
     url = '%s/direct_messages/sent.json' % $this->base_url
-    if not $this->_oauth_consumer:
-      raise TwitterError("The twitter.Api instance must be authenticated.")
+    if (! $this->_oauth_consumer) {
+        throw new Exception("The twitter.Api instance must be authenticated.");
     parameters = {}
     if since_id:
       parameters['since_id'] = since_id
@@ -1212,10 +1350,10 @@ class Api
     if not include_entities:
       parameters['include_entities'] = 'false'
     json = $this->_FetchUrl(url, parameters=parameters)
-    data = $this->_ParseAndCheckTwitter(json)
+    $data = $this->parseAndCheckTwitter($json);
     return [DirectMessage.NewFromJsonDict(x) for x in data]
 
-    def PostDirectMessage(self, text, user_id=null, screen_name=null):
+    public function postDirectMessage(text, user_id=null, screen_name=null):
     '''Post a twitter direct message from the authenticated user
 
     The twitter.Api instance must be authenticated.
@@ -1232,8 +1370,8 @@ class Api
     Returns:
       A twitter.DirectMessage instance representing the message posted
     '''
-    if not $this->_oauth_consumer:
-      raise TwitterError("The twitter.Api instance must be authenticated.")
+    if (! $this->_oauth_consumer) {
+        throw new Exception("The twitter.Api instance must be authenticated.");
     url  = '%s/direct_messages/new.json' % $this->base_url
     data = {'text': text}
     if user_id:
@@ -1242,11 +1380,11 @@ class Api
       data['screen_name'] = screen_name
     else:
       raise TwitterError("Specify at least one of user_id or screen_name.")
-    json = $this->_FetchUrl(url, post_data=data)
-    data = $this->_ParseAndCheckTwitter(json)
+    $json = $this->fetchUrl($url, $data)
+    $data = $this->parseAndCheckTwitter($json);
     return DirectMessage.NewFromJsonDict(data)
 
-    def DestroyDirectMessage(self, id, include_entities=True):
+    def DestroyDirectMessage(id, include_entities=True):
     '''Destroys the direct message specified in the required ID parameter.
 
     The twitter.Api instance must be authenticated, and the
@@ -1263,11 +1401,11 @@ class Api
     data = {'id': id}
     if not include_entities:
       data['include_entities'] = 'false'
-    json = $this->_FetchUrl(url, post_data=data)
-    data = $this->_ParseAndCheckTwitter(json)
+    $json = $this->fetchUrl($url, $data)
+    $data = $this->parseAndCheckTwitter($json);
     return DirectMessage.NewFromJsonDict(data)
 
-    def CreateFriendship(self, user_id=null, screen_name=null, follow=True):
+    public function createFriendship(user_id=null, screen_name=null, follow=True):
     '''Befriends the user specified by the user_id or screen_name.
 
     The twitter.Api instance must be authenticated.
@@ -1294,11 +1432,11 @@ class Api
       data['follow'] = 'true'
     else:
       data['follow'] = 'false'
-    json = $this->_FetchUrl(url, post_data=data)
-    data = $this->_ParseAndCheckTwitter(json)
+    $json = $this->fetchUrl($url, $data)
+    $data = $this->parseAndCheckTwitter($json);
     return User.NewFromJsonDict(data)
 
-    def DestroyFriendship(self, user_id=null, screen_name=null):
+    def DestroyFriendship(user_id=null, screen_name=null):
     '''Discontinues friendship with a user_id or screen_name.
 
     The twitter.Api instance must be authenticated.
@@ -1319,11 +1457,11 @@ class Api
       data['screen_name'] = screen_name
     else:
       raise TwitterError("Specify at least one of user_id or screen_name.")
-    json = $this->_FetchUrl(url, post_data=data)
-    data = $this->_ParseAndCheckTwitter(json)
+    $json = $this->fetchUrl($url, $data)
+    $data = $this->parseAndCheckTwitter($json);
     return User.NewFromJsonDict(data)
 
-    def CreateFavorite(self, status=null, id=null, include_entities=True):
+    public function createFavorite(status=null, id=null, include_entities=True):
     '''Favorites the specified status object or id as the authenticating user.
     Returns the favorite status when successful.
 
@@ -1351,11 +1489,11 @@ class Api
       raise TwitterError("Specify id or status")
     if not include_entities:
       data['include_entities'] = 'false'
-    json = $this->_FetchUrl(url, post_data=data)
-    data = $this->_ParseAndCheckTwitter(json)
-    return Status.NewFromJsonDict(data)
+    $json = $this->fetchUrl($url, $data)
+    $data = $this->parseAndCheckTwitter($json);
+    return Status::newFromJsonArray($data);
 
-    def DestroyFavorite(self, status=null, id=null, include_entities=True):
+    def DestroyFavorite(status=null, id=null, include_entities=True):
     '''Un-Favorites the specified status object or id as the authenticating user.
     Returns the un-favorited status when successful.
 
@@ -1383,9 +1521,9 @@ class Api
       raise TwitterError("Specify id or status")
     if not include_entities:
       data['include_entities'] = 'false'
-    json = $this->_FetchUrl(url, post_data=data)
-    data = $this->_ParseAndCheckTwitter(json)
-    return Status.NewFromJsonDict(data)
+    $json = $this->fetchUrl($url, $data)
+    $data = $this->parseAndCheckTwitter($json);
+    return Status::newFromJsonArray($data);
 
     def GetFavorites(self,
                    user_id=null,
@@ -1438,7 +1576,7 @@ class Api
 
 
     json = $this->_FetchUrl(url, parameters=parameters)
-    data = $this->_ParseAndCheckTwitter(json)
+    $data = $this->parseAndCheckTwitter($json);
     return [Status.NewFromJsonDict(x) for x in data]
 
     def GetMentions(self,
@@ -1483,8 +1621,8 @@ class Api
 
     url = '%s/statuses/mentions_timeline.json' % $this->base_url
 
-    if not $this->_oauth_consumer:
-      raise TwitterError("The twitter.Api instance must be authenticated.")
+    if (! $this->_oauth_consumer) {
+        throw new Exception("The twitter.Api instance must be authenticated.");
 
     parameters = {}
 
@@ -1503,7 +1641,7 @@ class Api
         parameters['max_id'] = long(max_id)
       except:
         raise TwitterError("max_id must be an integer")
-    if trim_user:
+    if ($trim_user) {
       parameters['trim_user'] = 1
     if contributor_details:
       parameters['contributor_details'] = 'true'
@@ -1511,10 +1649,10 @@ class Api
       parameters['include_entities'] = 'false'
 
     json = $this->_FetchUrl(url, parameters=parameters)
-    data = $this->_ParseAndCheckTwitter(json)
+    $data = $this->parseAndCheckTwitter($json);
     return [Status.NewFromJsonDict(x) for x in data]
 
-    def CreateList(self, name, mode=null, description=null):
+    public function createList(name, mode=null, description=null):
     '''Creates a new list with the give name for the authenticated user.
 
     The twitter.Api instance must be authenticated.
@@ -1533,15 +1671,15 @@ class Api
     '''
     url = '%s/lists/create.json' % $this->base_url
 
-    if not $this->_oauth_consumer:
-      raise TwitterError("The twitter.Api instance must be authenticated.")
+    if (! $this->_oauth_consumer) {
+        throw new Exception("The twitter.Api instance must be authenticated.");
     parameters = {'name': name}
     if mode is not null:
       parameters['mode'] = mode
     if description is not null:
       parameters['description'] = description
     json = $this->_FetchUrl(url, post_data=parameters)
-    data = $this->_ParseAndCheckTwitter(json)
+    $data = $this->parseAndCheckTwitter($json);
     return List.NewFromJsonDict(data)
 
     def DestroyList(self,
@@ -1590,11 +1728,11 @@ class Api
     else:
       raise TwitterError("Identify list by list_id or owner_screen_name/owner_id and slug")
 
-    json = $this->_FetchUrl(url, post_data=data)
-    data = $this->_ParseAndCheckTwitter(json)
+    $json = $this->fetchUrl($url, $data)
+    $data = $this->parseAndCheckTwitter($json);
     return List.NewFromJsonDict(data)
 
-    def CreateSubscription(self,
+    public function createSubscription(self,
                   owner_screen_name=false,
                   owner_id=false,
                   list_id=null,
@@ -1618,8 +1756,8 @@ class Api
       A twitter.List instance representing the list subscribed to
     '''
     url  = '%s/lists/subscribers/create.json' % ($this->base_url)
-    if not $this->_oauth_consumer:
-      raise TwitterError("The twitter.Api instance must be authenticated.")
+    if (! $this->_oauth_consumer) {
+        throw new Exception("The twitter.Api instance must be authenticated.");
     data = {}
     if list_id:
       try:
@@ -1639,8 +1777,8 @@ class Api
         raise TwitterError("Identify list by list_id or owner_screen_name/owner_id and slug")
     else:
       raise TwitterError("Identify list by list_id or owner_screen_name/owner_id and slug")
-    json = $this->_FetchUrl(url, post_data=data)
-    data = $this->_ParseAndCheckTwitter(json)
+    $json = $this->fetchUrl($url, $data)
+    $data = $this->parseAndCheckTwitter($json);
     return List.NewFromJsonDict(data)
 
     def DestroySubscription(self,
@@ -1667,8 +1805,8 @@ class Api
       A twitter.List instance representing the removed list.
     '''
     url  = '%s/lists/subscribers/destroy.json' % ($this->base_url)
-    if not $this->_oauth_consumer:
-      raise TwitterError("The twitter.Api instance must be authenticated.")
+    if (! $this->_oauth_consumer) {
+        throw new Exception("The twitter.Api instance must be authenticated.");
     data = {}
     if list_id:
       try:
@@ -1688,11 +1826,11 @@ class Api
         raise TwitterError("Identify list by list_id or owner_screen_name/owner_id and slug")
     else:
       raise TwitterError("Identify list by list_id or owner_screen_name/owner_id and slug")
-    json = $this->_FetchUrl(url, post_data=data)
-    data = $this->_ParseAndCheckTwitter(json)
+    $json = $this->fetchUrl($url, $data)
+    $data = $this->parseAndCheckTwitter($json);
     return List.NewFromJsonDict(data)
 
-    def GetSubscriptions(self, user_id=null, screen_name=null, count=20, cursor=-1):
+    def GetSubscriptions(user_id=null, screen_name=null, count=20, cursor=-1):
     '''
     Obtain a collection of the lists the specified user is subscribed to, 20
     lists per page by default. Does not include the user's own lists.
@@ -1717,7 +1855,7 @@ class Api
     Returns:
       A sequence of twitter.List instances, one for each list
     '''
-    if not $this->_oauth_consumer:
+    if (! $this->_oauth_consumer) {
       raise TwitterError("twitter.Api instance must be authenticated")
 
     url = '%s/lists/subscriptions.json' % ($this->base_url)
@@ -1744,10 +1882,10 @@ class Api
       raise TwitterError('Specify user_id or screen_name')
 
     json = $this->_FetchUrl(url, parameters=parameters)
-    data = $this->_ParseAndCheckTwitter(json)
+    $data = $this->parseAndCheckTwitter($json);
     return [List.NewFromJsonDict(x) for x in data['lists']]
 
-    def GetLists(self, user_id=null, screen_name=null, count=null, cursor=-1):
+    def GetLists(user_id=null, screen_name=null, count=null, cursor=-1):
     '''Fetch the sequence of lists for a user.
 
     The twitter.Api instance must be authenticated.
@@ -1771,7 +1909,7 @@ class Api
     Returns:
       A sequence of twitter.List instances, one for each list
     '''
-    if not $this->_oauth_consumer:
+    if (! $this->_oauth_consumer) {
       raise TwitterError("twitter.Api instance must be authenticated")
 
     url = '%s/lists/ownerships.json' % $this->base_url
@@ -1792,7 +1930,7 @@ class Api
     while True:
       parameters['cursor'] = cursor
       json = $this->_FetchUrl(url, parameters=parameters)
-      data = $this->_ParseAndCheckTwitter(json)
+      $data = $this->parseAndCheckTwitter($json);
       result += [List.NewFromJsonDict(x) for x in data['lists']]
       if 'next_cursor' in data:
         if data['next_cursor'] == 0 or data['next_cursor'] == data['previous_cursor']:
@@ -1810,7 +1948,7 @@ class Api
       A twitter.User instance representing that user if the
       credentials are valid, null otherwise.
     '''
-    if not $this->_oauth_consumer:
+    if (! $this->_oauth_consumer) {
       raise TwitterError("Api instance must first be given user credentials.")
     url = '%s/account/verify_credentials.json' % $this->base_url
     try:
@@ -1820,10 +1958,10 @@ class Api
         return null
       else:
         raise http_error
-    data = $this->_ParseAndCheckTwitter(json)
+    $data = $this->parseAndCheckTwitter($json);
     return User.NewFromJsonDict(data)
 
-    def SetCache(self, cache):
+    def SetCache(cache):
     '''Override the default cache.  Set to null to prevent caching.
 
     Args:
@@ -1835,7 +1973,7 @@ class Api
     else:
       $this->_cache = cache
 
-    def SetUrllib(self, urllib):
+    def SetUrllib(urllib):
     '''Override the default urllib implementation.
 
     Args:
@@ -1844,7 +1982,7 @@ class Api
     '''
     $this->_urllib = urllib
 
-    def SetCacheTimeout(self, cache_timeout):
+    def SetCacheTimeout(cache_timeout):
     '''Override the default cache timeout.
 
     Args:
@@ -1853,7 +1991,7 @@ class Api
     '''
     $this->_cache_timeout = cache_timeout
 
-    def SetUserAgent(self, user_agent):
+    def SetUserAgent(user_agent):
     '''Override the default user agent
 
     Args:
@@ -1862,7 +2000,7 @@ class Api
     '''
     $this->_request_headers['User-Agent'] = user_agent
 
-    def SetXTwitterHeaders(self, client, url, version):
+    def SetXTwitterHeaders(client, url, version):
     '''Set the X-Twitter HTTP headers that will be sent to the server.
 
     Args:
@@ -1880,7 +2018,7 @@ class Api
     $this->_request_headers['X-Twitter-Client-URL'] = url
     $this->_request_headers['X-Twitter-Client-Version'] = version
 
-    def SetSource(self, source):
+    def SetSource(source):
     '''Suggest the "from source" value to be displayed on the Twitter web site.
 
     The value of the 'source' parameter must be first recognized by
@@ -1894,7 +2032,7 @@ class Api
     '''
     $this->_default_params['source'] = source
 
-    def GetRateLimitStatus(self, resources=null):
+    def GetRateLimitStatus(resources=null):
     '''Fetch the rate limit status for the currently authorized user.
 
     Args:
@@ -1915,7 +2053,7 @@ class Api
 
     url  = '%s/application/rate_limit_status.json' % $this->base_url
     json = $this->_FetchUrl(url, parameters=parameters, no_cache=True)
-    data = $this->_ParseAndCheckTwitter(json)
+    $data = $this->parseAndCheckTwitter($json);
     return data
 
     def MaximumHitFrequency(self):
@@ -1949,7 +2087,7 @@ class Api
 
     return 60
 
-    def _BuildUrl(self, url, path_elements=null, extra_params=null):
+    def _BuildUrl(url, path_elements=null, extra_params=null):
     # Break url into constituent parts
     (scheme, netloc, path, params, query, fragment) = urlparse.urlparse(url)
 
@@ -1973,7 +2111,7 @@ class Api
     # Return the rebuilt URL
     return urlparse.urlunparse((scheme, netloc, path, params, query, fragment))
 
-    def _InitializeRequestHeaders(self, request_headers):
+    def _InitializeRequestHeaders(request_headers):
     if request_headers:
       $this->_request_headers = request_headers
     else:
@@ -1985,9 +2123,9 @@ class Api
     $this->SetUserAgent(user_agent)
 
     def _InitializeDefaultParameters(self):
-    $this->_default_params = {}
+    $this->_default_params = array();
 
-    def _DecompressGzippedResponse(self, response):
+    def _DecompressGzippedResponse(response):
     raw_data = response.read()
     if response.headers.get('content-encoding', null) == 'gzip':
       url_data = gzip.GzipFile(fileobj=StringIO.StringIO(raw_data)).read()
@@ -1995,13 +2133,13 @@ class Api
       url_data = raw_data
     return url_data
 
-    def _Encode(self, s):
+    def _Encode(s):
     if $this->_input_encoding:
       return unicode(s, $this->_input_encoding).encode('utf-8')
     else:
       return unicode(s).encode('utf-8')
 
-    def _EncodeParameters(self, parameters):
+    def _EncodeParameters(parameters):
     '''Return a string in key=value&key=value form
 
     Values of null are not included in the output string.
@@ -2019,7 +2157,7 @@ class Api
     else:
       return urllib.urlencode(dict([(k, $this->_Encode(v)) for k, v in parameters.items() if v is not null]))
 
-    def _EncodePostData(self, post_data):
+    def _EncodePostData(post_data):
     '''Return a string in key=value&key=value form
 
     Values are assumed to be encoded in the format specified by $this->_encoding,
@@ -2038,7 +2176,7 @@ class Api
     else:
       return urllib.urlencode(dict([(k, $this->_Encode(v)) for k, v in post_data.items()]))
 
-    def _ParseAndCheckTwitter(self, json):
+    def _ParseAndCheckTwitter(json):
     """Try and parse the JSON returned from Twitter and return
     an empty dictionary if there is any error. This is a purely
     defensive check because during some Twitter network outages
@@ -2055,7 +2193,7 @@ class Api
 
     return data
 
-    def _CheckForTwitterError(self, data):
+    def _CheckForTwitterError(data):
     """Raises a TwitterError if twitter returns an error message.
 
     Args:
