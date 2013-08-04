@@ -1,703 +1,605 @@
-<?php namespace League\Twitter;
-
-class User(object):
-  '''A class representing the User structure used by the twitter API.
-
-  The User structure exposes the following properties:
-
-    user.id
-    user.name
-    user.screen_name
-    user.location
-    user.description
-    user.profile_image_url
-    user.profile_background_tile
-    user.profile_background_image_url
-    user.profile_sidebar_fill_color
-    user.profile_background_color
-    user.profile_link_color
-    user.profile_text_color
-    user.protected
-    user.utc_offset
-    user.time_zone
-    user.url
-    user.status
-    user.statuses_count
-    user.followers_count
-    user.friends_count
-    user.favourites_count
-    user.geo_enabled
-    user.verified
-    user.lang
-    user.notifications
-    user.contributors_enabled
-    user.created_at
-    user.listed_count
-  '''
-  def __init__(self,
-               id=None,
-               name=None,
-               screen_name=None,
-               location=None,
-               description=None,
-               profile_image_url=None,
-               profile_background_tile=None,
-               profile_background_image_url=None,
-               profile_sidebar_fill_color=None,
-               profile_background_color=None,
-               profile_link_color=None,
-               profile_text_color=None,
-               protected=None,
-               utc_offset=None,
-               time_zone=None,
-               followers_count=None,
-               friends_count=None,
-               statuses_count=None,
-               favourites_count=None,
-               url=None,
-               status=None,
-               geo_enabled=None,
-               verified=None,
-               lang=None,
-               notifications=None,
-               contributors_enabled=None,
-               created_at=None,
-               listed_count=None):
-    self.id = id
-    self.name = name
-    self.screen_name = screen_name
-    self.location = location
-    self.description = description
-    self.profile_image_url = profile_image_url
-    self.profile_background_tile = profile_background_tile
-    self.profile_background_image_url = profile_background_image_url
-    self.profile_sidebar_fill_color = profile_sidebar_fill_color
-    self.profile_background_color = profile_background_color
-    self.profile_link_color = profile_link_color
-    self.profile_text_color = profile_text_color
-    self.protected = protected
-    self.utc_offset = utc_offset
-    self.time_zone = time_zone
-    self.followers_count = followers_count
-    self.friends_count = friends_count
-    self.statuses_count = statuses_count
-    self.favourites_count = favourites_count
-    self.url = url
-    self.status = status
-    self.geo_enabled = geo_enabled
-    self.verified = verified
-    self.lang = lang
-    self.notifications = notifications
-    self.contributors_enabled = contributors_enabled
-    self.created_at = created_at
-    self.listed_count = listed_count
-
-  def GetId(self):
-    '''Get the unique id of this user.
-
-    Returns:
-      The unique id of this user
-    '''
-    return self._id
-
-  def SetId(self, id):
-    '''Set the unique id of this user.
-
-    Args:
-      id: The unique id of this user.
-    '''
-    self._id = id
-
-  id = property(GetId, SetId,
-                doc='The unique id of this user.')
-
-  def GetName(self):
-    '''Get the real name of this user.
-
-    Returns:
-      The real name of this user
-    '''
-    return self._name
-
-  def SetName(self, name):
-    '''Set the real name of this user.
-
-    Args:
-      name: The real name of this user
-    '''
-    self._name = name
-
-  name = property(GetName, SetName,
-                  doc='The real name of this user.')
-
-  def GetScreenName(self):
-    '''Get the short twitter name of this user.
-
-    Returns:
-      The short twitter name of this user
-    '''
-    return self._screen_name
-
-  def SetScreenName(self, screen_name):
-    '''Set the short twitter name of this user.
-
-    Args:
-      screen_name: the short twitter name of this user
-    '''
-    self._screen_name = screen_name
-
-  screen_name = property(GetScreenName, SetScreenName,
-                         doc='The short twitter name of this user.')
-
-  def GetLocation(self):
-    '''Get the geographic location of this user.
-
-    Returns:
-      The geographic location of this user
-    '''
-    return self._location
-
-  def SetLocation(self, location):
-    '''Set the geographic location of this user.
-
-    Args:
-      location: The geographic location of this user
-    '''
-    self._location = location
-
-  location = property(GetLocation, SetLocation,
-                      doc='The geographic location of this user.')
-
-  def GetDescription(self):
-    '''Get the short text description of this user.
-
-    Returns:
-      The short text description of this user
-    '''
-    return self._description
-
-  def SetDescription(self, description):
-    '''Set the short text description of this user.
-
-    Args:
-      description: The short text description of this user
-    '''
-    self._description = description
-
-  description = property(GetDescription, SetDescription,
-                         doc='The short text description of this user.')
-
-  def GetUrl(self):
-    '''Get the homepage url of this user.
-
-    Returns:
-      The homepage url of this user
-    '''
-    return self._url
-
-  def SetUrl(self, url):
-    '''Set the homepage url of this user.
-
-    Args:
-      url: The homepage url of this user
-    '''
-    self._url = url
-
-  url = property(GetUrl, SetUrl,
-                 doc='The homepage url of this user.')
-
-  def GetProfileImageUrl(self):
-    '''Get the url of the thumbnail of this user.
-
-    Returns:
-      The url of the thumbnail of this user
-    '''
-    return self._profile_image_url
-
-  def SetProfileImageUrl(self, profile_image_url):
-    '''Set the url of the thumbnail of this user.
-
-    Args:
-      profile_image_url: The url of the thumbnail of this user
-    '''
-    self._profile_image_url = profile_image_url
-
-  profile_image_url= property(GetProfileImageUrl, SetProfileImageUrl,
-                              doc='The url of the thumbnail of this user.')
-
-  def GetProfileBackgroundTile(self):
-    '''Boolean for whether to tile the profile background image.
-
-    Returns:
-      True if the background is to be tiled, False if not, None if unset.
-    '''
-    return self._profile_background_tile
-
-  def SetProfileBackgroundTile(self, profile_background_tile):
-    '''Set the boolean flag for whether to tile the profile background image.
-
-    Args:
-      profile_background_tile: Boolean flag for whether to tile or not.
-    '''
-    self._profile_background_tile = profile_background_tile
-
-  profile_background_tile = property(GetProfileBackgroundTile, SetProfileBackgroundTile,
-                                     doc='Boolean for whether to tile the background image.')
-
-  def GetProfileBackgroundImageUrl(self):
-    return self._profile_background_image_url
-
-  def SetProfileBackgroundImageUrl(self, profile_background_image_url):
-    self._profile_background_image_url = profile_background_image_url
-
-  profile_background_image_url = property(GetProfileBackgroundImageUrl, SetProfileBackgroundImageUrl,
-                                          doc='The url of the profile background of this user.')
-
-  def GetProfileSidebarFillColor(self):
-    return self._profile_sidebar_fill_color
-
-  def SetProfileSidebarFillColor(self, profile_sidebar_fill_color):
-    self._profile_sidebar_fill_color = profile_sidebar_fill_color
-
-  profile_sidebar_fill_color = property(GetProfileSidebarFillColor, SetProfileSidebarFillColor)
-
-  def GetProfileBackgroundColor(self):
-    return self._profile_background_color
-
-  def SetProfileBackgroundColor(self, profile_background_color):
-    self._profile_background_color = profile_background_color
-
-  profile_background_color = property(GetProfileBackgroundColor, SetProfileBackgroundColor)
-
-  def GetProfileLinkColor(self):
-    return self._profile_link_color
-
-  def SetProfileLinkColor(self, profile_link_color):
-    self._profile_link_color = profile_link_color
-
-  profile_link_color = property(GetProfileLinkColor, SetProfileLinkColor)
-
-  def GetProfileTextColor(self):
-    return self._profile_text_color
-
-  def SetProfileTextColor(self, profile_text_color):
-    self._profile_text_color = profile_text_color
-
-  profile_text_color = property(GetProfileTextColor, SetProfileTextColor)
-
-  def GetProtected(self):
-    return self._protected
-
-  def SetProtected(self, protected):
-    self._protected = protected
-
-  protected = property(GetProtected, SetProtected)
-
-  def GetUtcOffset(self):
-    return self._utc_offset
-
-  def SetUtcOffset(self, utc_offset):
-    self._utc_offset = utc_offset
-
-  utc_offset = property(GetUtcOffset, SetUtcOffset)
-
-  def GetTimeZone(self):
-    '''Returns the current time zone string for the user.
-
-    Returns:
-      The descriptive time zone string for the user.
-    '''
-    return self._time_zone
-
-  def SetTimeZone(self, time_zone):
-    '''Sets the user's time zone string.
-
-    Args:
-      time_zone:
-        The descriptive time zone to assign for the user.
-    '''
-    self._time_zone = time_zone
-
-  time_zone = property(GetTimeZone, SetTimeZone)
-
-  def GetStatus(self):
-    '''Get the latest twitter.Status of this user.
-
-    Returns:
-      The latest twitter.Status of this user
-    '''
-    return self._status
-
-  def SetStatus(self, status):
-    '''Set the latest twitter.Status of this user.
-
-    Args:
-      status:
-        The latest twitter.Status of this user
-    '''
-    self._status = status
-
-  status = property(GetStatus, SetStatus,
-                    doc='The latest twitter.Status of this user.')
-
-  def GetFriendsCount(self):
-    '''Get the friend count for this user.
-
-    Returns:
-      The number of users this user has befriended.
-    '''
-    return self._friends_count
-
-  def SetFriendsCount(self, count):
-    '''Set the friend count for this user.
-
-    Args:
-      count:
-        The number of users this user has befriended.
-    '''
-    self._friends_count = count
-
-  friends_count = property(GetFriendsCount, SetFriendsCount,
-                           doc='The number of friends for this user.')
-
-  def GetListedCount(self):
-    '''Get the listed count for this user.
-
-    Returns:
-      The number of lists this user belongs to.
-    '''
-    return self._listed_count
-
-  def SetListedCount(self, count):
-    '''Set the listed count for this user.
-
-    Args:
-      count:
-        The number of lists this user belongs to.
-    '''
-    self._listed_count = count
-
-  listed_count = property(GetListedCount, SetListedCount,
-                          doc='The number of lists this user belongs to.')
-
-  def GetFollowersCount(self):
-    '''Get the follower count for this user.
-
-    Returns:
-      The number of users following this user.
-    '''
-    return self._followers_count
-
-  def SetFollowersCount(self, count):
-    '''Set the follower count for this user.
-
-    Args:
-      count:
-        The number of users following this user.
-    '''
-    self._followers_count = count
-
-  followers_count = property(GetFollowersCount, SetFollowersCount,
-                             doc='The number of users following this user.')
-
-  def GetStatusesCount(self):
-    '''Get the number of status updates for this user.
-
-    Returns:
-      The number of status updates for this user.
-    '''
-    return self._statuses_count
-
-  def SetStatusesCount(self, count):
-    '''Set the status update count for this user.
-
-    Args:
-      count:
-        The number of updates for this user.
-    '''
-    self._statuses_count = count
-
-  statuses_count = property(GetStatusesCount, SetStatusesCount,
-                            doc='The number of updates for this user.')
-
-  def GetFavouritesCount(self):
-    '''Get the number of favourites for this user.
-
-    Returns:
-      The number of favourites for this user.
-    '''
-    return self._favourites_count
-
-  def SetFavouritesCount(self, count):
-    '''Set the favourite count for this user.
-
-    Args:
-      count:
-        The number of favourites for this user.
-    '''
-    self._favourites_count = count
-
-  favourites_count = property(GetFavouritesCount, SetFavouritesCount,
-                              doc='The number of favourites for this user.')
-
-  def GetGeoEnabled(self):
-    '''Get the setting of geo_enabled for this user.
-
-    Returns:
-      True/False if Geo tagging is enabled
-    '''
-    return self._geo_enabled
-
-  def SetGeoEnabled(self, geo_enabled):
-    '''Set the latest twitter.geo_enabled of this user.
-
-    Args:
-      geo_enabled:
-        True/False if Geo tagging is to be enabled
-    '''
-    self._geo_enabled = geo_enabled
-
-  geo_enabled = property(GetGeoEnabled, SetGeoEnabled,
-                         doc='The value of twitter.geo_enabled for this user.')
-
-  def GetVerified(self):
-    '''Get the setting of verified for this user.
-
-    Returns:
-      True/False if user is a verified account
-    '''
-    return self._verified
-
-  def SetVerified(self, verified):
-    '''Set twitter.verified for this user.
-
-    Args:
-      verified:
-        True/False if user is a verified account
-    '''
-    self._verified = verified
-
-  verified = property(GetVerified, SetVerified,
-                      doc='The value of twitter.verified for this user.')
-
-  def GetLang(self):
-    '''Get the setting of lang for this user.
-
-    Returns:
-      language code of the user
-    '''
-    return self._lang
-
-  def SetLang(self, lang):
-    '''Set twitter.lang for this user.
-
-    Args:
-      lang:
-        language code for the user
-    '''
-    self._lang = lang
-
-  lang = property(GetLang, SetLang,
-                  doc='The value of twitter.lang for this user.')
-
-  def GetNotifications(self):
-    '''Get the setting of notifications for this user.
-
-    Returns:
-      True/False for the notifications setting of the user
-    '''
-    return self._notifications
-
-  def SetNotifications(self, notifications):
-    '''Set twitter.notifications for this user.
-
-    Args:
-      notifications:
-        True/False notifications setting for the user
-    '''
-    self._notifications = notifications
-
-  notifications = property(GetNotifications, SetNotifications,
-                           doc='The value of twitter.notifications for this user.')
-
-  def GetContributorsEnabled(self):
-    '''Get the setting of contributors_enabled for this user.
-
-    Returns:
-      True/False contributors_enabled of the user
-    '''
-    return self._contributors_enabled
-
-  def SetContributorsEnabled(self, contributors_enabled):
-    '''Set twitter.contributors_enabled for this user.
-
-    Args:
-      contributors_enabled:
-        True/False contributors_enabled setting for the user
-    '''
-    self._contributors_enabled = contributors_enabled
-
-  contributors_enabled = property(GetContributorsEnabled, SetContributorsEnabled,
-                                  doc='The value of twitter.contributors_enabled for this user.')
-
-  def GetCreatedAt(self):
-    '''Get the setting of created_at for this user.
-
-    Returns:
-      created_at value of the user
-    '''
-    return self._created_at
-
-  def SetCreatedAt(self, created_at):
-    '''Set twitter.created_at for this user.
-
-    Args:
-      created_at:
-        created_at value for the user
-    '''
-    self._created_at = created_at
-
-  created_at = property(GetCreatedAt, SetCreatedAt,
-                        doc='The value of twitter.created_at for this user.')
-
-  def __ne__(self, other):
-    return not self.__eq__(other)
-
-  def __eq__(self, other):
-    try:
-      return other and \
-             self.id == other.id and \
-             self.name == other.name and \
-             self.screen_name == other.screen_name and \
-             self.location == other.location and \
-             self.description == other.description and \
-             self.profile_image_url == other.profile_image_url and \
-             self.profile_background_tile == other.profile_background_tile and \
-             self.profile_background_image_url == other.profile_background_image_url and \
-             self.profile_sidebar_fill_color == other.profile_sidebar_fill_color and \
-             self.profile_background_color == other.profile_background_color and \
-             self.profile_link_color == other.profile_link_color and \
-             self.profile_text_color == other.profile_text_color and \
-             self.protected == other.protected and \
-             self.utc_offset == other.utc_offset and \
-             self.time_zone == other.time_zone and \
-             self.url == other.url and \
-             self.statuses_count == other.statuses_count and \
-             self.followers_count == other.followers_count and \
-             self.favourites_count == other.favourites_count and \
-             self.friends_count == other.friends_count and \
-             self.status == other.status and \
-             self.geo_enabled == other.geo_enabled and \
-             self.verified == other.verified and \
-             self.lang == other.lang and \
-             self.notifications == other.notifications and \
-             self.contributors_enabled == other.contributors_enabled and \
-             self.created_at == other.created_at and \
-             self.listed_count == other.listed_count
-
-    except AttributeError:
-      return False
-
-  def __str__(self):
-    '''A string representation of this twitter.User instance.
-
-    The return value is the same as the JSON string representation.
-
-    Returns:
-      A string representation of this twitter.User instance.
-    '''
-    return self.AsJsonString()
-
-  def AsJsonString(self):
+<?php
+namespace League\Twitter;
+
+class User
+{
+    protected $id;
+    protected $name;
+    protected $screen_name;
+    protected $location;
+    protected $description;
+    protected $profile_image_url;
+    protected $profile_background_tile;
+    protected $profile_background_image_url;
+    protected $profile_sidebar_fill_color;
+    protected $profile_background_color;
+    protected $profile_link_color;
+    protected $profile_text_color;
+    protected $protected;
+    protected $utc_offset;
+    protected $time_zone;
+    protected $url;
+    protected $status;
+    protected $statuses_count;
+    protected $followers_count;
+    protected $friends_count;
+    protected $favourites_count;
+    protected $geo_enabled;
+    protected $verified;
+    protected $lang;
+    protected $notifications;
+    protected $contributors_enabled;
+    protected $created_at;
+    protected $listed_count;
+
+    /**
+     * Constructor
+     */
+    public function __construct(
+        $id = null,
+        $name = null,
+        $screen_name = null,
+        $location = null,
+        $description = null,
+        $profile_image_url = null,
+        $profile_background_tile = null,
+        $profile_background_image_url = null,
+        $profile_sidebar_fill_color = null,
+        $profile_background_color = null,
+        $profile_link_color = null,
+        $profile_text_color = null,
+        $protected = null,
+        $utc_offset = null,
+        $time_zone = null,
+        $followers_count = null,
+        $friends_count = null,
+        $statuses_count = null,
+        $favourites_count = null,
+        $url = null,
+        $status = null,
+        $geo_enabled = null,
+        $verified = null,
+        $lang = null,
+        $notifications = null,
+        $contributors_enabled = null,
+        $created_at = null,
+        $listed_count = null
+    ) {
+        $this->id = $id;
+        $this->name = $name;
+        $this->screen_name = $screen_name;
+        $this->location = $location;
+        $this->description = $description;
+        $this->profile_image_url = $profile_image_url;
+        $this->profile_background_tile = $profile_background_tile;
+        $this->profile_background_image_url = $profile_background_image_url;
+        $this->profile_sidebar_fill_color = $profile_sidebar_fill_color;
+        $this->profile_background_color = $profile_background_color;
+        $this->profile_link_color = $profile_link_color;
+        $this->profile_text_color = $profile_text_color;
+        $this->protected = $protected;
+        $this->utc_offset = $utc_offset;
+        $this->time_zone = $time_zone;
+        $this->followers_count = $followers_count;
+        $this->friends_count = $friends_count;
+        $this->statuses_count = $statuses_count;
+        $this->favourites_count = $favourites_count;
+        $this->url = $url;
+        $this->status = $status;
+        $this->geo_enabled = $geo_enabled;
+        $this->verified = $verified;
+        $this->lang = $lang;
+        $this->notifications = $notifications;
+        $this->contributors_enabled = $contributors_enabled;
+        $this->created_at = $created_at;
+        $this->listed_count = $listed_count;
+    }
+
+    /**
+     * @returns $id
+     * Get the Id of the user
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param $id
+     * Set the id of the user to the provided parameter
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @returns $name
+     * Return the name of the user
+     */
+    public function getName()
+    {
+        return $this->name;
+    } 
+
+    /**
+     * @param $name
+     * Set the name of the user to the specified value
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }	
+
+    /**
+     * @returns $screen_name
+     * Return the value of users screen name
+     */
+    public function getScreenName()
+    {
+        return $this->screen_name;
+    }
+
+    /**
+     * @param $screen_name
+     * Set the value of users screen name to the specified value
+     */
+    public function setScreenName($screen_name)
+    { 
+        $this->screen_name = $screen_name;
+    }
+
+    /**
+     * @returns $location
+     * Return the location of user
+     */
+    public function getLocation()
+    {
+        return $this->location;
+    }
+
+    /**
+     * @param $location
+     * Set location of user to specified value
+     */
+    public function setLocation($location)
+    {
+        $this->location = $location;
+    }
+
+    /**
+     * @returns $description
+     * Return the description of the user
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param $description
+     * Set the description of the user to the specified value
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    /**
+     * @returns $url
+     * Get the url associated with the user
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param $url
+     * Set url of user to specified value
+     */
+    public function setUrl($url)
+    {
+        $this->url = $url;
+    }
+
+    /**
+     * @returns $profile_image_url
+     * Return the profile image url of the user
+     */
+    public function getProfileImageUrl()
+    {
+        return $this->profile_image_url;
+    }
+
+    /**
+     * @param $profile_image_url
+     * Set profile image url of user to specified value
+     */
+    public function setProfileImageUrl($profile_image_url)
+    {
+        $this->profile_image_url = $profile_image_url;
+    }
+
+    /**
+     * @returns $profile_background_tile
+     * Return the profile background tile of the user
+     */
+    public function getProfileBackgroundTile()
+    {
+        return $this->profile_background_tile;
+    }
+
+    /**
+     * @param $profile_background_tile
+     * Set profile background tile to specified value
+     */
+    public function setProfileBackgroundTile($profile_background_tile)
+    {
+        $this->profile_background_tile = $profile_background_tile;
+    }
+
+    /**
+     * @returns $profile_background_image_url
+     * Returns profile background image url of the user
+     */
+    public function getProfileBackgroundImageUrl()
+    {
+        return $this->profile_background_image_url;
+    }
+
+    /**
+     * @param $profile_background_image_url
+     * Set profile background image url to specified value
+     */
+    public function setProfileBackgroundImageUrl($profile_background_image_url)
+    {
+        $this->profile_background_image_url = $profile_background_image_url;
+    }
+
+    /**
+     * @returns $profile_sidebar_fill_color
+     * Returns profile sidebar fill color of the user
+     */
+    public function getProfileSidebarFillColor()
+    {
+        return $this->profile_sidebar_fill_color;
+    }
+
+    /**
+     * @param $profile_sidebar_fill_color
+     * Set profile sidebar fill color to specified value
+     */
+    public function setProfileSidebarFillColor($profile_sidebar_fill_color)
+    {
+        $this->profile_sidebar_fill_color = $profile_sidebar_fill_color;
+    }
+
+    /**
+     * @returns $profile_background_color
+     * Returns profile background color of the user
+     */
+    public function getProfileBackgroundColor()
+    {
+        return $this->profile_background_color;
+    }
+
+    /**
+     * @param $profile_background_color
+     * Set profile background color to specified value
+     */
+    public function setProfileBackgroundColor($profile_background_color)
+    {
+        $this->profile_background_color = $profile_background_color;
+    }
+
+    /**
+     * @returns $profile_link_color
+     * Returns profile link color of the user
+     */
+    public function getProfileLinkColor()
+    {
+        return $this->profile_link_color;
+    }
+
+    /**
+     * @param $profile_link_color
+     * Set profile link color to specified value
+     */
+    public function setProfileLinkColor($profile_link_color)
+    {
+        $this->profile_link_color = $profile_link_color;
+    }
+
+    /**
+     * @returns $profile_text_color
+     * Returns profile text color of the user
+     */
+    public function getProfileTextColor()
+    {
+        return $this->profile_text_color;
+    }
+
+    /**
+     * @param $profile_text_color
+     * Set profile text color to specified value
+     */
+    public function setProfileTextColor($profile_text_color)
+    {
+        $this->profile_text_color = $profile_text_color;
+    }
+
+    /**
+     * @returns $protected
+     * Returns protected status of the user
+     */
+    public function getProtected()
+    {
+        return $this->protected;
+    }
+
+    /**
+     * @param $protected
+     * Set protected status to specified value
+     */
+    public function setProtected($protected)
+    {
+        $this->protected = $protected;
+    }
+
+    /**
+     * @returns $utc_offset
+     * Returns the UTC offset of the user
+     */
+    public function getUtcOffset()
+    {
+        return $this->utc_offset;
+    }
+
+    /**
+     * @param $utc_offset
+     * Set UTC offset to specified value
+     */
+    public function setUtcOffset($utc_offset)
+    {
+        $this->utc_offset = $utc_offset;
+    }
+
+    /**
+     * @returns $time_zone
+     * Returns time zone of the user
+     */
+    public function getTimeZone()
+    {
+        return $this->time_zone;
+    }
+
+    /**
+     * @param $time_zone
+     * Set time zone to specified value
+     */
+    public function setTimeZone($time_zone)
+    {
+        $this->time_zone = $time_zone;
+    }
+
+    /**
+     * @returns $status
+     * Returns most recent status of the user
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param $status
+     * Set status of specified value
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    }
+
+    /**
+     * @returns $friends_count
+     * Returns the friend count of the user
+     */
+    public function getFriendsCount()
+    {
+        return $this->friends_count;
+    }
+
+    /**
+     * @param $friends_count
+     * Set the friends_count to specified value
+     */
+    public function setFriendsCount($count)
+    {
+        $this->friends_count = $count;
+    }
+
+    /**
+     * @returns $listed_count
+     * Returns the number of lists the user is a member of
+     */
+    public function getListedCount()
+    {
+        return $this->listed_count;
+    }
+
+    /**
+     * @param $listed_count
+     * Set the number of lists the user is a member of
+     */
+    public function setListedCount($listed_count)
+    {
+        $this->listed_count = $listed_count;
+    }
+
+    /**
+     * @returns $followers_count
+     * Returns the number of followers the user has
+     */
+    public function getFollowersCount()
+    {
+        return $this->followers_count;
+    }
+
+    /**
+     * @param $followers_count
+     * Set number of followers the user has
+     */
+    public function setFollowersCount($followers_count)
+    {
+        $this->followers_count = $followers_count;
+    }
+
+    /**
+     * @returns $statuses_count
+     * Returns the number of status updates the user has made
+     */
+    public function getStatusesCount()
+    {
+        return $this->statuses_count;
+    }
+
+    /**
+     * @param $statuses_count
+     * Set protected status to specified value 
+     */
+    public function setStatusesCount($statuses_count)
+    {
+        $this->statuses_count = $statuses_count;
+    }
+
+    /**
+     * @returns $favourites_count
+     * Get the number of favourites for this user.
+     */
+    public function getFavouritesCount()
+    {
+        return $this->favourites_count;
+    }
+
+    /**
+     * @param $favourites_count
+     * Set protected status to specified value
+     */
+    public function setFavouritesCount($count)
+    {
+        $this->favourites_count = $favourites_count;
+    }
+
+    public function getGeoEnabled()
+    {
+        return $this->geo_enabled;
+    }
+
+    public function setGeoEnabled($geo_enabled)
+    {
+        $this->geo_enabled = $geo_enabled;
+    }
+
+    public function getVerified()
+    {
+        return $this->verified;
+    }
+
+    public function setVerified($verified)
+    {
+        $this->verified = $verified;
+    }
+
+    public function getLang()
+    {
+        return $this->lang;
+    }
+
+    public function setLang($lang)
+    {
+        $this->lang = $lang;
+    }
+
+    public function getNotifications()
+    {
+        return $this->notifications;
+    }
+
+    public function setNotifications($notifications)
+    {
+        $this->notifications = $notifications;
+    }
+
+    public function getContributorsEnabled()
+    {
+        return $this->contributors_enabled;
+    }
+
+    public function setContributorsEnabled($contributors_enabled)
+    {
+        $this->contributors_enabled = $contributors_enabled;
+    }
+
+    public function getCreatedAt()
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt($created_at)
+    {
+        $this->created_at = $created_at;
+    }
+
+    public function isEqual($other)
+    {
+        return ($this == $other);
+    }
+
+    public function __toString()
+    {
+        return json_encode($this);
+    }
+
+    public function AsJsonString()
+    {
     '''A JSON string representation of this twitter.User instance.
 
-    Returns:
+        returns:
       A JSON string representation of this twitter.User instance
    '''
-    return simplejson.dumps(self.AsDict(), sort_keys=True)
+        return simplejson.dumps(.AsDict(), sort_keys=True)
+    }
 
-  def AsDict(self):
-    '''A dict representation of this twitter.User instance.
+    public function asArray()
+    {
+        $data = array();
+        $json = $this->__toString();
+	$data = json_decode($json, true);
+	foreach($data as $key => $value) {
+	    if($value == "") {
+	        unset($data[$key]);
+	    }
+	}
+        return $data;
+    }
 
-    The return value uses the same key names as the JSON representation.
-
-    Return:
-      A dict representing this twitter.User instance
-    '''
-    data = {}
-    if self.id:
-      data['id'] = self.id
-    if self.name:
-      data['name'] = self.name
-    if self.screen_name:
-      data['screen_name'] = self.screen_name
-    if self.location:
-      data['location'] = self.location
-    if self.description:
-      data['description'] = self.description
-    if self.profile_image_url:
-      data['profile_image_url'] = self.profile_image_url
-    if self.profile_background_tile is not None:
-      data['profile_background_tile'] = self.profile_background_tile
-    if self.profile_background_image_url:
-      data['profile_sidebar_fill_color'] = self.profile_background_image_url
-    if self.profile_background_color:
-      data['profile_background_color'] = self.profile_background_color
-    if self.profile_link_color:
-      data['profile_link_color'] = self.profile_link_color
-    if self.profile_text_color:
-      data['profile_text_color'] = self.profile_text_color
-    if self.protected is not None:
-      data['protected'] = self.protected
-    if self.utc_offset:
-      data['utc_offset'] = self.utc_offset
-    if self.time_zone:
-      data['time_zone'] = self.time_zone
-    if self.url:
-      data['url'] = self.url
-    if self.status:
-      data['status'] = self.status.AsDict()
-    if self.friends_count:
-      data['friends_count'] = self.friends_count
-    if self.followers_count:
-      data['followers_count'] = self.followers_count
-    if self.statuses_count:
-      data['statuses_count'] = self.statuses_count
-    if self.favourites_count:
-      data['favourites_count'] = self.favourites_count
-    if self.geo_enabled:
-      data['geo_enabled'] = self.geo_enabled
-    if self.verified:
-      data['verified'] = self.verified
-    if self.lang:
-      data['lang'] = self.lang
-    if self.notifications:
-      data['notifications'] = self.notifications
-    if self.contributors_enabled:
-      data['contributors_enabled'] = self.contributors_enabled
-    if self.created_at:
-      data['created_at'] = self.created_at
-    if self.listed_count:
-      data['listed_count'] = self.listed_count
-
-    return data
-
-  @staticmethod
-  def NewFromJsonDict(data):
+    public function NewFromJsonDict(data)
+    {
     '''Create a new instance based on a JSON dict.
 
     Args:
       data:
         A JSON dict, as converted from the JSON in the twitter API
 
-    Returns:
+        returns:
       A twitter.User instance
     '''
     if 'status' in data:
-      status = Status.NewFromJsonDict(data['status'])
+      status = $Status.NewFromJsonDict(data['status'])
     else:
-      status = None
-    return User(id=data.get('id', None),
+      status = $None
+        return User(id=data.get('id', None),
                 name=data.get('name', None),
                 screen_name=data.get('screen_name', None),
                 location=data.get('location', None),
@@ -707,15 +609,15 @@ class User(object):
                 favourites_count=data.get('favourites_count', None),
                 friends_count=data.get('friends_count', None),
                 profile_image_url=data.get('profile_image_url_https', data.get('profile_image_url', None)),
-                profile_background_tile = data.get('profile_background_tile', None),
-                profile_background_image_url = data.get('profile_background_image_url', None),
-                profile_sidebar_fill_color = data.get('profile_sidebar_fill_color', None),
-                profile_background_color = data.get('profile_background_color', None),
-                profile_link_color = data.get('profile_link_color', None),
-                profile_text_color = data.get('profile_text_color', None),
-                protected = data.get('protected', None),
-                utc_offset = data.get('utc_offset', None),
-                time_zone = data.get('time_zone', None),
+                profile_background_tile = $data.get('profile_background_tile', None),
+                profile_background_image_url = $data.get('profile_background_image_url', None),
+                profile_sidebar_fill_color = $data.get('profile_sidebar_fill_color', None),
+                profile_background_color = $data.get('profile_background_color', None),
+                profile_link_color = $data.get('profile_link_color', None),
+                profile_text_color = $data.get('profile_text_color', None),
+                protected = $data.get('protected', None),
+                utc_offset = $data.get('utc_offset', None),
+                time_zone = $data.get('time_zone', None),
                 url=data.get('url', None),
                 status=status,
                 geo_enabled=data.get('geo_enabled', None),
