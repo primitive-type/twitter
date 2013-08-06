@@ -1,21 +1,24 @@
 <?php namespace League\Twitter;
 
-class Hashtag(object):
-  ''' A class representing a twitter hashtag
-  '''
-  def __init__(self,
-               text=None):
-    self.text = text
+class HashTag
+{
+    /**
+     * A class representing a Twitter HashTag.
+     */
+    public function __construct($text) {
+      $this->text = $text;
+    }
 
-  @staticmethod
-  def NewFromJsonDict(data):
-    '''Create a new instance based on a JSON dict.
-
-    Args:
-      data:
-        A JSON dict, as converted from the JSON in the twitter API
-
-    Returns:
-      A twitter.Hashtag instance
-    '''
-    return Hashtag(text = data.get('text', None))
+    /**
+     * Create a new instance based on a JSON dict.
+     * 
+     * @param array data Array containing the JSON data from the twitter API
+     * 
+     * @return League\Twitter\HashTag
+     */
+    public static function newFromJsonArray($data) {
+        $text = isset($data['text']) ? $data['text'] : null;
+        
+        return new static($text);
+    }
+}

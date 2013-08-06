@@ -1072,57 +1072,67 @@ class Api
         return $result;
     }
 
-    public function getFollowerIDs(user_id=null, screen_name=null, cursor=-1, stringify_ids=false, count=null):
-      '''Returns a list of twitter user id's for every person
-      that is following the specified user.
+    /**
+     * Returns a list of twitter user id's for every person that is following the specified user.
+     * 
+     * @param foo $user_id The id of the user to retrieve the id list for
+     * @param foo $screen_name The screen_name of the user to retrieve the id list for
+     * @param foo $cursor Specifies the Twitter API Cursor location to start at.
+     * @param foo $stringify_ids if True then twitter will return the ids as strings instead of integers.
+     * @param foo $count The number of status messages to retrieve. [Optional]
+     * @return array[int]
+     */
+    public function getFollowerIDs(
+        $user_id = null, 
+        $screen_name = null, 
+        $cursor = -1, 
+        $stringify_ids = false, 
+        $count = null
+    ) {
 
-      Args:
-        user_id:
-          The id of the user to retrieve the id list for
-          [Optional]
-        screen_name:
-          The screen_name of the user to retrieve the id list for
-          [Optional]
-        cursor:
-          Specifies the Twitter API Cursor location to start at.
-          Note: there are pagination limits.
-          [Optional]
-        stringify_ids:
-          if True then twitter will return the ids as strings instead of integers.
-          [Optional]
-        count:
-          The number of status messages to retrieve. [Optional]
+        $url = sprint('%s/followers/ids.json', $this->base_url);
 
+        if (! $this->_oauth_consumer) {
+            throw new Exception("League\Twitter\Api instance must be authenticated");
+        }
 
-      Returns:
-        A list of integers, one for each user id.
-      '''
-      url = '%s/followers/ids.json' % $this->base_url
-      if (! $this->_oauth_consumer) {
-            throw new Exception("League\Twitter\Api instance must be authenticated")
-      $parameters = array();
-      if user_id is not null:
-        parameters['user_id'] = user_id
-      if screen_name is not null:
-        parameters['screen_name'] = screen_name
-      if stringify_ids:
-        parameters['stringify_ids'] = True
-      if (! is_null($count)) {
-        parameters['count'] = count
-      result = []
-      while True:
-        parameters['cursor'] = cursor
-        $json = $this->fetchUrl($url, 'GET', $parameters);
-        $data = $this->parseAndCheckTwitter($json);
-        result += [x for x in data['ids']]
-        if 'next_cursor' in data:
-          if data['next_cursor'] == 0 or data['next_cursor'] == data['previous_cursor']:
-            break
-          else:
-            cursor = data['next_cursor']
-        else:
-          break
-      return result
+        $parameters = array();
+        
+        if (! is_null($user_id)) {
+            $parameters['user_id'] = $user_id;
+        }
+        
+        if (! is_null($screen_name)) {
+            $parameters['screen_name'] = $screen_name;
+        }
+        
+        if ($stringify_ids) {
+            $parameters['stringify_ids'] = true;
+        }
+        
+        if (! is_null($count)) {
+            $parameters['count'] = $count;
+        }
+
+        $result = []
+        while (true) {
+            $parameters['cursor'] = $cursor;
+            $json = $this->fetchUrl($url, 'GET', $parameters);
+            $data = $this->parseAndCheckTwitter($json);
+            $result += [x for x in data['ids']];
+            if (array_key_exists('next_cursor', $data) {
+                if ($data['next_cursor'] == 0 or $data['next_cursor'] == $data['previous_cursor']) {
+                    break;
+                }
+              else:
+                $cursor = $data['next_cursor'];
+            else {
+                break;
+            }
+        }
+
+        return $result;
+    }
 
     public function getFollowers(user_id=null, screen_name=null, cursor=-1, skip_status=false, include_user_entities=false):
     '''Fetch the sequence of twitter.User instances, one for each follower
