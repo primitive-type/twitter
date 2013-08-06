@@ -536,9 +536,9 @@ class User
 
     /**
      * Get the contributors enabled setting for this user.
-     * @return $contributors_enabled
+     * @return boolean $contributors_enabled
      */
-    public function boolean getContributorsEnabled()
+    public function getContributorsEnabled()
     {
         return $this->contributors_enabled;
     }
@@ -696,6 +696,7 @@ class User
      * Static method to return a new instance of the user object
      * @param array $data
      * @return \League\Twitter\User 
+     */
     public static function NewFromJsonArray($data)
     {
         return new static($data);
