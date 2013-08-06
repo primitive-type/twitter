@@ -7,7 +7,7 @@ namespace League\Twitter;
 class Url
 {
     protected $url;
-    protected $expanded_url
+    protected $expanded_url;
 
     /**
      * constructor
@@ -31,3 +31,4 @@ class Url
 	$expanded_url = (isset($data['expanded_url'])) ? $data['expanded_url'] : null;
 	return new static($url, $expanded_url);
     }
+}
