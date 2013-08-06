@@ -1,4 +1,5 @@
-<?php namespace League\Twitter;
+<?php 
+namespace League\Twitter;
 
 /**
  * A class representing a URL contained in a tweet
