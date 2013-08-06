@@ -100,7 +100,7 @@ class User
     public function setName($name)
     {
         $this->name = $name;
-    }	
+    }    
 
     /**
      * Return the value of users screen name
@@ -585,7 +585,7 @@ class User
      */
     public function __toString()
     {
-    	return $this->asJsonString();
+        return $this->asJsonString();
     }
 
     /**
@@ -595,7 +595,7 @@ class User
     public function AsJsonString()
     {
         $object_array = $this->asArray();
-	return json_encode($object_array);
+    return json_encode($object_array);
     }
 
     /**
@@ -606,90 +606,90 @@ class User
     {
         $data = array();
         if($this->id !== null) {
-	    $data['id'] = $this->id;
-	}
+            $data['id'] = $this->id;
+        }
         if($this->name !== null) {
-	    $data['name'] = $this->name;
-	}
+            $data['name'] = $this->name;
+        }
         if($this->screen_name !== null) {
-	    $data['screen_name'] = $this->screen_name;
-	}
+            $data['screen_name'] = $this->screen_name;
+        }
         if($this->location !== null) {
-	    $data['location'] = $this->location;
-	}
+            $data['location'] = $this->location;
+        }
         if($this->description !== null) {
-	    $data['description'] = $this->description;
-	}
+            $data['description'] = $this->description;
+        }
         if($this->profile_image_url !== null) {
-	    $data['profile_image_url'] = $this->profile_image_url;
-	}
+            $data['profile_image_url'] = $this->profile_image_url;
+        }
         if($this->profile_background_tile !== null) {
-	    $data['profile_background_tile'] = $this->profile_background_tile;
-	}
+            $data['profile_background_tile'] = $this->profile_background_tile;
+        }
         if($this->profile_background_image_url !== null) {
-	    $data['profile_background_image_url'] = $this->profile_background_image_url;
-	}
+            $data['profile_background_image_url'] = $this->profile_background_image_url;
+        }
         if($this->profile_sidebar_fill_color !== null) {
-	    $data['profile_sidebar_fill_color'] = $this->profile_sidebar_fill_color;
-	}
+            $data['profile_sidebar_fill_color'] = $this->profile_sidebar_fill_color;
+        }
         if($this->background_color !== null) {
-	    $data['background_color'] = $this->background_color;
-	}
+            $data['background_color'] = $this->background_color;
+        }
         if($this->profile_link_color !== null) {
-	    $data['profile_link_color'] = $this->profile_link_color;
-	}
+            $data['profile_link_color'] = $this->profile_link_color;
+        }
         if($this->profile_text_color !== null) {
-	    $data['profile_text_color'] = $this->profile_text_color;
-	}
+            $data['profile_text_color'] = $this->profile_text_color;
+        }
         if($this->protected !== null) {
-	    $data['protected'] = $this->protected;
-	}
+            $data['protected'] = $this->protected;
+        }
         if($this->utc_offset !== null) {
-	    $data['utc_offset'] = $this->utc_offset;
-	}
+            $data['utc_offset'] = $this->utc_offset;
+        }
         if($this->time_zone !== null) {
-	    $data['time_zone'] = $this->time_zone;
-	}
+            $data['time_zone'] = $this->time_zone;
+        }
         if($this->url !== null) {
-	    $data['url'] = $this->url;
-	}
+            $data['url'] = $this->url;
+        }
         if($this->status !== null) {
-	    $data['status'] = $this->status;
-	}
+            $data['status'] = $this->status;
+        }
         if($this->friends_count !== null) {
-	    $data['friends_count'] = $this->friends_count;
-	}
+            $data['friends_count'] = $this->friends_count;
+        }
         if($this->followers_count !== null) {
-	    $data['followers_count'] = $this->followers_count;
-	}
+            $data['followers_count'] = $this->followers_count;
+        }
         if($this->statuses_count !== null) {
-	    $data['statuses_count'] = $this->statuses_count;
-	}
+            $data['statuses_count'] = $this->statuses_count;
+        }
         if($this->favourites_count !== null) {
-	    $data['favourites_count'] = $this->favourites_count;
-	}
+            $data['favourites_count'] = $this->favourites_count;
+        }
         if($this->geo_enabled !== null) {
-	    $data['geo_enabled'] = $this->geo_enabled;
-	}
+            $data['geo_enabled'] = $this->geo_enabled;
+        }
         if($this->verified !== null) {
-	    $data['verified'] = $this->verified;
-	}
+            $data['verified'] = $this->verified;
+        }
         if($this->lang !== null) {
-	    $data['lang'] = $this->lang;
-	}
+            $data['lang'] = $this->lang;
+        }
         if($this->notifications !== null) {
-	    $data['notifications'] = $this->notifications;
-	}
+            $data['notifications'] = $this->notifications;
+        }
         if($this->contributors_enabled !== null) {
-	    $data['contributors_enabled'] = $this->contributors_enabled;
-	}
+            $data['contributors_enabled'] = $this->contributors_enabled;
+        }
         if($this->created_at !== null) {
-	    $data['created_at'] = $this->created_at;
-	}
+            $data['created_at'] = $this->created_at;
+        }
         if($this->listed_count !== null) {
-	    $data['listed_count'] = $this->listed_count;
-	}
-	return $data;
+            $data['listed_count'] = $this->listed_count;
+        }
+        return $data;
     }
 
     /**
