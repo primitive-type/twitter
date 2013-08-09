@@ -1,23 +1,34 @@
-<?php namespace League\Twitter;
+<?php 
+namespace League\Twitter;
 
-class Url(object):
-  '''A class representing an URL contained in a tweet'''
-  def __init__(self,
-               url=None,
-               expanded_url=None):
-    self.url = url
-    self.expanded_url = expanded_url
+/**
+ * A class representing a URL contained in a tweet
+ */
+class Url
+{
+    protected $url;
+    protected $expanded_url;
 
-  @staticmethod
-  def NewFromJsonDict(data):
-    '''Create a new instance based on a JSON dict.
+    /**
+     * constructor
+     * @param string $url
+     * @param string $expanded_url
+     */
+    public function __construct($url, $expanded_url)
+    {
+        $this->url = $url;
+	$this->expanded_url = $expanded_url;
+    }
 
-    Args:
-      data:
-        A JSON dict, as converted from the JSON in the twitter API
-
-    Returns:
-      A twitter.Url instance
-    '''
-    return Url(url=data.get('url', None),
-               expanded_url=data.get('expanded_url', None))
+    /**
+     * Create a new instance based on an array
+     * @param Array $data
+     * @return \League\Twitter\Url
+     */
+    public static function newFromArray($data)
+    {
+        $url = (isset($data['url'])) ? $data['url'] : null;
+	$expanded_url = (isset($data['expanded_url'])) ? $data['expanded_url'] : null;
+	return new static($url, $expanded_url);
+    }
+}

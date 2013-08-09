@@ -35,69 +35,52 @@ class User
     /**
      * Constructor
      */
-    public function __construct(
-        $id = null,
-        $name = null,
-        $screen_name = null,
-        $location = null,
-        $description = null,
-        $profile_image_url = null,
-        $profile_background_tile = null,
-        $profile_background_image_url = null,
-        $profile_sidebar_fill_color = null,
-        $profile_background_color = null,
-        $profile_link_color = null,
-        $profile_text_color = null,
-        $protected = null,
-        $utc_offset = null,
-        $time_zone = null,
-        $followers_count = null,
-        $friends_count = null,
-        $statuses_count = null,
-        $favourites_count = null,
-        $url = null,
-        $status = null,
-        $geo_enabled = null,
-        $verified = null,
-        $lang = null,
-        $notifications = null,
-        $contributors_enabled = null,
-        $created_at = null,
-        $listed_count = null
-    ) {
-        $this->id = $id;
-        $this->name = $name;
-        $this->screen_name = $screen_name;
-        $this->location = $location;
-        $this->description = $description;
-        $this->profile_image_url = $profile_image_url;
-        $this->profile_background_tile = $profile_background_tile;
-        $this->profile_background_image_url = $profile_background_image_url;
-        $this->profile_sidebar_fill_color = $profile_sidebar_fill_color;
-        $this->profile_background_color = $profile_background_color;
-        $this->profile_link_color = $profile_link_color;
-        $this->profile_text_color = $profile_text_color;
-        $this->protected = $protected;
-        $this->utc_offset = $utc_offset;
-        $this->time_zone = $time_zone;
-        $this->followers_count = $followers_count;
-        $this->friends_count = $friends_count;
-        $this->statuses_count = $statuses_count;
-        $this->favourites_count = $favourites_count;
-        $this->url = $url;
-        $this->status = $status;
-        $this->geo_enabled = $geo_enabled;
-        $this->verified = $verified;
-        $this->lang = $lang;
-        $this->notifications = $notifications;
-        $this->contributors_enabled = $contributors_enabled;
-        $this->created_at = $created_at;
-        $this->listed_count = $listed_count;
+    public function __construct($data) {
+        $this->id = isset($data['id']) ? $data['id'] : null;
+        $this->name = isset($data['name']) ? $data['name'] : null;
+        $this->screen_name = isset($data['screen_name']) ? $data['screen_name'] : null;
+        $this->location = isset($data['location']) ? $data['location'] : null;
+        $this->description = isset($data['description']) ? $data['description'] : null;
+        $this->profile_image_url = isset($data['profile_image_url']) ? $data['profile_image_url'] : null;
+        $this->profile_background_tile = isset($data['profile_background_tile']) ? $data['profile_background_tile'] : null;
+        $this->profile_background_image_url = isset($data['profile_background_image_url']) ? $data['profile_background_image_url'] : null;
+        $this->profile_sidebar_fill_color = isset($data['profile_sidebar_fill_color']) ? $data['profile_sidebar_fill_color'] : null;
+        $this->profile_background_color = isset($data['profile_background_color']) ? $data['profile_background_color'] : null;
+        $this->profile_link_color = isset($data['profile_link_color']) ? $data['profile_link_color'] : null;
+        $this->profile_text_color = isset($data['profile_text_color']) ? $data['profile_text_color'] : null;
+        $this->protected = isset($data['protected']) ? $data['protected'] : null;
+        $this->utc_offset = isset($data['utc_offset']) ? $data['utc_offset'] : null;
+        $this->time_zone = isset($data['time_zone']) ? $data['time_zone'] : null;
+        $this->followers_count = isset($data['followers_count']) ? $data['followers_count'] : null;
+        $this->friends_count = isset($data['friends_count']) ? $data['friends_count'] : null;
+        $this->statuses_count = isset($data['statuses_count']) ? $data['statuses_count'] : null;
+        $this->favourites_count = isset($data['favourites_count']) ? $data['favourites_count'] : null;
+        $this->url = isset($data['url']) ? $data['url'] : null;
+        $this->status = isset($data['url']) ? $data['status'] : null;
+        $this->geo_enabled = isset($data['geo_enabled']) ? $data['geo_enabled'] : null;
+        $this->verified = isset($data['verified']) ? $data['verified'] : null;
+        $this->lang = isset($data['lang']) ? $data['lang'] : null;
+        $this->notifications = isset($data['notifications']) ? $data['notifications'] : null;
+        $this->contributors_enabled = isset($data['contributors_enabled']) ? $data['contributors_enabled'] : null;
+        $this->created_at = isset($data['created_at']) ? $data['created_at'] : null;
+        $this->listed_count = isset($data['listed_count']) ? $data['listed_count'] : null;
     }
 
     /**
-     * @returns $id
+     * Static method to return a new instance of the user object
+     *
+     * @param array $data
+     * @return \League\Twitter\User 
+     */
+    public static function newFromJsonArray($data)
+    {
+        return new static($data);
+    }
+
+    /**
      * Get the Id of the user
+     *
+     * @return string $id
      */
     public function getId()
     {
@@ -105,8 +88,9 @@ class User
     }
 
     /**
-     * @param $id
      * Set the id of the user to the provided parameter
+     *
+     * @param string $id
      */
     public function setId($id)
     {
@@ -114,8 +98,9 @@ class User
     }
 
     /**
-     * @returns $name
      * Return the name of the user
+     *
+     * @return string $name
      */
     public function getName()
     {
@@ -123,17 +108,19 @@ class User
     } 
 
     /**
-     * @param $name
      * Set the name of the user to the specified value
+     *
+     * @param string $name
      */
     public function setName($name)
     {
         $this->name = $name;
-    }	
+    }    
 
     /**
-     * @returns $screen_name
      * Return the value of users screen name
+     *
+     * @return string $screen_name
      */
     public function getScreenName()
     {
@@ -141,8 +128,9 @@ class User
     }
 
     /**
-     * @param $screen_name
      * Set the value of users screen name to the specified value
+     *
+     * @param string $screen_name
      */
     public function setScreenName($screen_name)
     { 
@@ -150,8 +138,9 @@ class User
     }
 
     /**
-     * @returns $location
      * Return the location of user
+     *
+     * @return string $location
      */
     public function getLocation()
     {
@@ -159,8 +148,9 @@ class User
     }
 
     /**
-     * @param $location
      * Set location of user to specified value
+     *
+     * @param string $location
      */
     public function setLocation($location)
     {
@@ -168,8 +158,9 @@ class User
     }
 
     /**
-     * @returns $description
      * Return the description of the user
+     *
+     * @return string $description
      */
     public function getDescription()
     {
@@ -177,8 +168,9 @@ class User
     }
 
     /**
-     * @param $description
      * Set the description of the user to the specified value
+     *
+     * @param string $description
      */
     public function setDescription($description)
     {
@@ -186,8 +178,9 @@ class User
     }
 
     /**
-     * @returns $url
      * Get the url associated with the user
+     *
+     * @return string $url
      */
     public function getUrl()
     {
@@ -195,8 +188,9 @@ class User
     }
 
     /**
-     * @param $url
      * Set url of user to specified value
+     *
+     * @param string $url
      */
     public function setUrl($url)
     {
@@ -204,8 +198,9 @@ class User
     }
 
     /**
-     * @returns $profile_image_url
      * Return the profile image url of the user
+     *
+     * @return string $profile_image_url
      */
     public function getProfileImageUrl()
     {
@@ -213,8 +208,9 @@ class User
     }
 
     /**
-     * @param $profile_image_url
      * Set profile image url of user to specified value
+     *
+     * @param string $profile_image_url
      */
     public function setProfileImageUrl($profile_image_url)
     {
@@ -222,8 +218,9 @@ class User
     }
 
     /**
-     * @returns $profile_background_tile
      * Return the profile background tile of the user
+     *
+     * @return bool $profile_background_tile
      */
     public function getProfileBackgroundTile()
     {
@@ -231,8 +228,9 @@ class User
     }
 
     /**
-     * @param $profile_background_tile
      * Set profile background tile to specified value
+     *
+     * @param bool $profile_background_tile
      */
     public function setProfileBackgroundTile($profile_background_tile)
     {
@@ -240,8 +238,9 @@ class User
     }
 
     /**
-     * @returns $profile_background_image_url
      * Returns profile background image url of the user
+     *
+     * @return string  $profile_background_image_url
      */
     public function getProfileBackgroundImageUrl()
     {
@@ -249,8 +248,9 @@ class User
     }
 
     /**
-     * @param $profile_background_image_url
      * Set profile background image url to specified value
+     *
+     * @param string $profile_background_image_url
      */
     public function setProfileBackgroundImageUrl($profile_background_image_url)
     {
@@ -258,8 +258,9 @@ class User
     }
 
     /**
-     * @returns $profile_sidebar_fill_color
      * Returns profile sidebar fill color of the user
+     *
+     * @return string $profile_sidebar_fill_color
      */
     public function getProfileSidebarFillColor()
     {
@@ -267,8 +268,9 @@ class User
     }
 
     /**
-     * @param $profile_sidebar_fill_color
      * Set profile sidebar fill color to specified value
+     *
+     * @param string $profile_sidebar_fill_color
      */
     public function setProfileSidebarFillColor($profile_sidebar_fill_color)
     {
@@ -276,8 +278,9 @@ class User
     }
 
     /**
-     * @returns $profile_background_color
      * Returns profile background color of the user
+     *
+     * @return string $profile_background_color
      */
     public function getProfileBackgroundColor()
     {
@@ -285,8 +288,9 @@ class User
     }
 
     /**
-     * @param $profile_background_color
      * Set profile background color to specified value
+     *
+     * @param string $profile_background_color
      */
     public function setProfileBackgroundColor($profile_background_color)
     {
@@ -294,8 +298,9 @@ class User
     }
 
     /**
-     * @returns $profile_link_color
      * Returns profile link color of the user
+     *
+     * @return string $profile_link_color
      */
     public function getProfileLinkColor()
     {
@@ -303,8 +308,9 @@ class User
     }
 
     /**
-     * @param $profile_link_color
      * Set profile link color to specified value
+     *
+     * @param string $profile_link_color
      */
     public function setProfileLinkColor($profile_link_color)
     {
@@ -312,8 +318,9 @@ class User
     }
 
     /**
-     * @returns $profile_text_color
      * Returns profile text color of the user
+     *
+     * @return string $profile_text_color
      */
     public function getProfileTextColor()
     {
@@ -321,8 +328,9 @@ class User
     }
 
     /**
-     * @param $profile_text_color
      * Set profile text color to specified value
+     *
+     * @param string $profile_text_color
      */
     public function setProfileTextColor($profile_text_color)
     {
@@ -330,8 +338,9 @@ class User
     }
 
     /**
-     * @returns $protected
      * Returns protected status of the user
+     *
+     * @return bool $protected
      */
     public function getProtected()
     {
@@ -339,8 +348,9 @@ class User
     }
 
     /**
-     * @param $protected
      * Set protected status to specified value
+     *
+     * @param bool $protected
      */
     public function setProtected($protected)
     {
@@ -348,8 +358,9 @@ class User
     }
 
     /**
-     * @returns $utc_offset
      * Returns the UTC offset of the user
+     *
+     * @return int $utc_offset
      */
     public function getUtcOffset()
     {
@@ -357,8 +368,9 @@ class User
     }
 
     /**
-     * @param $utc_offset
      * Set UTC offset to specified value
+     *
+     * @param int $utc_offset
      */
     public function setUtcOffset($utc_offset)
     {
@@ -366,8 +378,9 @@ class User
     }
 
     /**
-     * @returns $time_zone
      * Returns time zone of the user
+     *
+     * @return string $time_zone
      */
     public function getTimeZone()
     {
@@ -375,8 +388,9 @@ class User
     }
 
     /**
-     * @param $time_zone
      * Set time zone to specified value
+     *
+     * @param string $time_zone
      */
     public function setTimeZone($time_zone)
     {
@@ -384,8 +398,9 @@ class User
     }
 
     /**
-     * @returns $status
      * Returns most recent status of the user
+     *
+     * @return \League\Twitter\Status $status
      */
     public function getStatus()
     {
@@ -393,8 +408,9 @@ class User
     }
 
     /**
-     * @param $status
      * Set status of specified value
+     *
+     * @param \League\Twitter\Status $status
      */
     public function setStatus($status)
     {
@@ -402,8 +418,9 @@ class User
     }
 
     /**
-     * @returns $friends_count
      * Returns the friend count of the user
+     *
+     * @return int $friends_count
      */
     public function getFriendsCount()
     {
@@ -411,8 +428,9 @@ class User
     }
 
     /**
-     * @param $friends_count
      * Set the friends_count to specified value
+     *
+     * @param int $friends_count
      */
     public function setFriendsCount($count)
     {
@@ -420,8 +438,9 @@ class User
     }
 
     /**
-     * @returns $listed_count
      * Returns the number of lists the user is a member of
+     *
+     * @return int $listed_count
      */
     public function getListedCount()
     {
@@ -429,8 +448,9 @@ class User
     }
 
     /**
-     * @param $listed_count
      * Set the number of lists the user is a member of
+     *
+     * @param int $listed_count
      */
     public function setListedCount($listed_count)
     {
@@ -438,8 +458,9 @@ class User
     }
 
     /**
-     * @returns $followers_count
      * Returns the number of followers the user has
+     *
+     * @return int $followers_count
      */
     public function getFollowersCount()
     {
@@ -447,8 +468,9 @@ class User
     }
 
     /**
-     * @param $followers_count
      * Set number of followers the user has
+     *
+     * @param int $followers_count
      */
     public function setFollowersCount($followers_count)
     {
@@ -456,8 +478,9 @@ class User
     }
 
     /**
-     * @returns $statuses_count
      * Returns the number of status updates the user has made
+     *
+     * @return int $statuses_count
      */
     public function getStatusesCount()
     {
@@ -465,8 +488,9 @@ class User
     }
 
     /**
-     * @param $statuses_count
-     * Set protected status to specified value 
+     * Set protected status to specified value
+     *
+     * @param int $statuses_count
      */
     public function setStatusesCount($statuses_count)
     {
@@ -474,8 +498,9 @@ class User
     }
 
     /**
-     * @returns $favourites_count
-     * Get the number of favourites for this user.
+     * Get the number of favourites for this user
+     *
+     * @return int $favourites_count
      */
     public function getFavouritesCount()
     {
@@ -483,147 +508,242 @@ class User
     }
 
     /**
-     * @param $favourites_count
      * Set protected status to specified value
+     *
+     * @param int $favourites_count
      */
     public function setFavouritesCount($count)
     {
         $this->favourites_count = $favourites_count;
     }
 
+    /**
+     * Get the GeoEnabled setting for this user
+     * @return bool $geo_enabled
+     */
     public function getGeoEnabled()
     {
         return $this->geo_enabled;
     }
 
+    /**
+     * Set Geo Enabled flag to provided value
+     * @param bool $favourites_count
+     */
     public function setGeoEnabled($geo_enabled)
     {
         $this->geo_enabled = $geo_enabled;
     }
 
+    /**
+     * Get the verified status for this user.
+     * @return bool $verified
+     */
     public function getVerified()
     {
         return $this->verified;
     }
 
+    /**
+     * Set verified status to specified value
+     * @param bool $verified
+     */
     public function setVerified($verified)
     {
         $this->verified = $verified;
     }
 
+    /**
+     * Get the language for this user.
+     * @return string $language
+     */
     public function getLang()
     {
         return $this->lang;
     }
 
+    /**
+     * Set language to specified value
+     * @param string $language
+     */
     public function setLang($lang)
     {
         $this->lang = $lang;
     }
 
+    /**
+     * Get the notifications for this user.
+     * @return bool $notifications
+     */
     public function getNotifications()
     {
         return $this->notifications;
     }
 
+    /**
+     * Set the notifications to specified value
+     * @param bool $notifications
+     */
     public function setNotifications($notifications)
     {
         $this->notifications = $notifications;
     }
 
+    /**
+     * Get the contributors enabled setting for this user.
+     * @return bool $contributors_enabled
+     */
     public function getContributorsEnabled()
     {
         return $this->contributors_enabled;
     }
 
+    /**
+     * Set contributors enabled setting to specified value
+     * @param bool $contributors_enabled
+     */
     public function setContributorsEnabled($contributors_enabled)
     {
         $this->contributors_enabled = $contributors_enabled;
     }
 
+    /**
+     * Get the date/time this user was created
+     * @return string $created_at
+     */
     public function getCreatedAt()
     {
         return $this->created_at;
     }
 
+    /**
+     * Set date/time of user creation to specified value
+     * @param string $created_at
+     */
     public function setCreatedAt($created_at)
     {
         $this->created_at = $created_at;
     }
-
+    
+    /**
+     * Comparison to see if the provided object equals the current instance
+     * @param \League\Twitter\User $other
+     */
     public function isEqual($other)
     {
         return ($this == $other);
     }
 
+    /**
+     * Method for printing the object as a string
+     * @return string a json representation of the object
+     */
     public function __toString()
     {
-        return json_encode($this);
+        return $this->asJsonString();
     }
 
+    /**
+     * Method for printing the object as a string
+     * @return string a json representation of the object
+     */
     public function AsJsonString()
     {
-    '''A JSON string representation of this twitter.User instance.
-
-        returns:
-      A JSON string representation of this twitter.User instance
-   '''
-        return simplejson.dumps(.AsDict(), sort_keys=True)
+        $object_array = $this->asArray();
+    return json_encode($object_array);
     }
 
+    /**
+     * Method to return the User object as an array
+     * @return array $data
+     */
     public function asArray()
     {
         $data = array();
-        $json = $this->__toString();
-	$data = json_decode($json, true);
-	foreach($data as $key => $value) {
-	    if($value == "") {
-	        unset($data[$key]);
-	    }
-	}
+        if ($this->id !== null) {
+            $data['id'] = $this->id;
+        }
+        if ($this->name !== null) {
+            $data['name'] = $this->name;
+        }
+        if ($this->screen_name !== null) {
+            $data['screen_name'] = $this->screen_name;
+        }
+        if ($this->location !== null) {
+            $data['location'] = $this->location;
+        }
+        if ($this->description !== null) {
+            $data['description'] = $this->description;
+        }
+        if ($this->profile_image_url !== null) {
+            $data['profile_image_url'] = $this->profile_image_url;
+        }
+        if ($this->profile_background_tile !== null) {
+            $data['profile_background_tile'] = $this->profile_background_tile;
+        }
+        if ($this->profile_background_image_url !== null) {
+            $data['profile_background_image_url'] = $this->profile_background_image_url;
+        }
+        if ($this->profile_sidebar_fill_color !== null) {
+            $data['profile_sidebar_fill_color'] = $this->profile_sidebar_fill_color;
+        }
+        if ($this->background_color !== null) {
+            $data['background_color'] = $this->background_color;
+        }
+        if ($this->profile_link_color !== null) {
+            $data['profile_link_color'] = $this->profile_link_color;
+        }
+        if ($this->profile_text_color !== null) {
+            $data['profile_text_color'] = $this->profile_text_color;
+        }
+        if ($this->protected !== null) {
+            $data['protected'] = $this->protected;
+        }
+        if ($this->utc_offset !== null) {
+            $data['utc_offset'] = $this->utc_offset;
+        }
+        if ($this->time_zone !== null) {
+            $data['time_zone'] = $this->time_zone;
+        }
+        if ($this->url !== null) {
+            $data['url'] = $this->url;
+        }
+        if ($this->status !== null) {
+            $data['status'] = $this->status;
+        }
+        if ($this->friends_count !== null) {
+            $data['friends_count'] = $this->friends_count;
+        }
+        if ($this->followers_count !== null) {
+            $data['followers_count'] = $this->followers_count;
+        }
+        if ($this->statuses_count !== null) {
+            $data['statuses_count'] = $this->statuses_count;
+        }
+        if ($this->favourites_count !== null) {
+            $data['favourites_count'] = $this->favourites_count;
+        }
+        if ($this->geo_enabled !== null) {
+            $data['geo_enabled'] = $this->geo_enabled;
+        }
+        if ($this->verified !== null) {
+            $data['verified'] = $this->verified;
+        }
+        if ($this->lang !== null) {
+            $data['lang'] = $this->lang;
+        }
+        if ($this->notifications !== null) {
+            $data['notifications'] = $this->notifications;
+        }
+        if ($this->contributors_enabled !== null) {
+            $data['contributors_enabled'] = $this->contributors_enabled;
+        }
+        if ($this->created_at !== null) {
+            $data['created_at'] = $this->created_at;
+        }
+        if ($this->listed_count !== null) {
+            $data['listed_count'] = $this->listed_count;
+        }
         return $data;
     }
-
-    public function newFromJsonDict(data)
-    {
-    '''Create a new instance based on a JSON dict.
-
-    Args:
-      data:
-        A JSON dict, as converted from the JSON in the twitter API
-
-        returns:
-      A twitter.User instance
-    '''
-    if 'status' in data:
-      status = $Status.NewFromJsonDict(data['status'])
-    else:
-      status = $None
-        return User(id=data.get('id', None),
-                name=data.get('name', None),
-                screen_name=data.get('screen_name', None),
-                location=data.get('location', None),
-                description=data.get('description', None),
-                statuses_count=data.get('statuses_count', None),
-                followers_count=data.get('followers_count', None),
-                favourites_count=data.get('favourites_count', None),
-                friends_count=data.get('friends_count', None),
-                profile_image_url=data.get('profile_image_url_https', data.get('profile_image_url', None)),
-                profile_background_tile = $data.get('profile_background_tile', None),
-                profile_background_image_url = $data.get('profile_background_image_url', None),
-                profile_sidebar_fill_color = $data.get('profile_sidebar_fill_color', None),
-                profile_background_color = $data.get('profile_background_color', None),
-                profile_link_color = $data.get('profile_link_color', None),
-                profile_text_color = $data.get('profile_text_color', None),
-                protected = $data.get('protected', None),
-                utc_offset = $data.get('utc_offset', None),
-                time_zone = $data.get('time_zone', None),
-                url=data.get('url', None),
-                status=status,
-                geo_enabled=data.get('geo_enabled', None),
-                verified=data.get('verified', None),
-                lang=data.get('lang', None),
-                notifications=data.get('notifications', None),
-                contributors_enabled=data.get('contributors_enabled', None),
-                created_at=data.get('created_at', None),
-                listed_count=data.get('listed_count', None))
+}
