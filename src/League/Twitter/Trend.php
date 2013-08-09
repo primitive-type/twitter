@@ -7,12 +7,11 @@ namespace League\Twitter;
 class Trend
 {
     /**
+     * Constructor
      * @param string $name
      * @param string $query
      * @param int $timestamp
      * @param string $url
-     *
-     * Constructor
      */
     public function __construct($name=null, $query=null, $timestamp=null, $url=null)
     {
@@ -23,9 +22,8 @@ class Trend
     }
 
     /**
-     * @return string 
-     *
      * Magic method use to output the instance as a string, using formatted string
+     * @return string 
      */
     public function __toString()
     {
@@ -33,10 +31,9 @@ class Trend
     }
 
     /**
+     * Method to determine if 2 Trend instances are equal to each other
      * @param \League\Twitter\Trend $other
      * @return boolean
-     *
-     * Method to determine if 2 Trend instances are equal to each other
      */
     public function isEqual(Trend $other)
     {
@@ -47,10 +44,9 @@ class Trend
     }
 
     /**
+     * Creates an instance of Trend from a data array parameter
      * @param array $data
      * @return \League\Twitter\Trend
-     *
-     * Creates an instance of Trend from a data array parameter
      */
     public static function newFromJsonDict($data)
     {
