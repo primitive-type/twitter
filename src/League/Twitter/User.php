@@ -584,7 +584,7 @@ class User
         return $data;
     }
 
-    public function NewFromJsonDict(data)
+    public function newFromJsonDict(data)
     {
     '''Create a new instance based on a JSON dict.
 
