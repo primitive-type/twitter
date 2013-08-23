@@ -211,157 +211,158 @@ class Status
         $this->truncated = $truncated;
     }
 
+    /**
+     * Get the retweeted state of this status
+     * @return boolean
+     */
     public function getRetweeted()
     {
         return $this->retweeted;
     }
 
+    /**
+     * Set the retweeted staet of this status
+     * @param boolean $retweeted
+     */
     public function setRetweeted($retweeted)
     {
         $this->retweeted = $retweeted;
     }
 
+    /**
+     * Get the source of this tweet
+     * @return string
+     */
     public function getSource()
     {
         return $this->source;
     }
 
+    /**
+     * Set the source of this tweet
+     * @param string $source
+     */
     public function setSource($source)
     {
         $this->source = $source;
     }
 
+    /**
+     * Get the text of this status message.
+     * @return string
+     */
     public function getText()
     {
-    '''Get the text of this status message.
-
-        returns:
-      The text of this status message.
-    '''
         return $this->text;
     }
 
+    /**
+     * Set the text of this status message.
+     * @param string $text
+     */
     public function setText($text)
     {
-    '''Set the text of this status message.
-
-    Args:
-      text:
-        The text of this status message
-    '''
         $this->text = $text;
     }
 
+    /**
+     * Get the geolocation associated with this status message
+     * @return string
+     */
     public function getLocation()
     {
-    '''Get the geolocation associated with this status message
-
-        returns:
-      The geolocation string of this status message.
-    '''
         return $this->location;
     }
 
+    /**
+     * Set the geolocation associated with this status message
+     * @param string $location
+     */
     public function setLocation($location)
     {
-    '''Set the geolocation associated with this status message
-
-    Args:
-      location:
-        The geolocation string of this status message
-    '''
         $this->location = $location;
     }
 
+    /**
+     * Get a human readable string representing the posting time
+     * @return string
+     */
     public function getRelativeCreatedAt()
     {
-    '''Get a human readable string representing the posting time
+        $fudge = 1.25;
+        $delta  = $this->now - $this->created_at_in_seconds;
 
-        returns:
-      A human readable string representing the posting time
-    '''
-        fudge = $1.25
-        delta  = $long($this->now) - long($this->created_at_in_seconds)
-
-        if delta < (1 * fudge)
-        {
-          return 'about a second ago'
-        elif delta < (60 * (1/fudge))
-        {
-          return 'about %d seconds ago' % (delta)
-        elif delta < (60 * fudge)
-        {
-          return 'about a minute ago'
-        elif delta < (60 * 60 * (1/fudge))
-        {
-          return 'about %d minutes ago' % (delta / 60)
-        elif delta < (60 * 60 * fudge) or delta / (60 * 60) == 1:
-          return 'about an hour ago'
-        elif delta < (60 * 60 * 24 * (1/fudge))
-        {
-          return 'about %d hours ago' % (delta / (60 * 60))
-        elif delta < (60 * 60 * 24 * fudge) or delta / (60 * 60 * 24) == 1:
-          return 'about a day ago'
-        else:
-          return 'about %d days ago' % (delta / (60 * 60 * 24));
+        if($delta < (1 * $fudge)) {
+            return 'about a second ago';
+        } elseif ($delta < (60 * (1/$fudge))) {
+            return sprintf('about %d seconds ago', $delta); 
+        } elseif ($delta < (60 * $fudge)) {
+            return 'about a minute ago';
+        } elseif ($delta < (60 * 60 * (1/$fudge))) {
+            return sprintf('about %d minutes ago', ($delta / 60));
+        } elseif ($delta < (60 * 60 * $fudge) || $delta / (60 * 60) == 1) {
+            return 'about an hour ago';
+        } elseif ($delta < (60 * 60 * 24 * (1/$fudge))) {
+	    return sprintf('about %d hours ago', ($delta / (60 * 60));
+        } elseif ($delta < (60 * 60 * 24 * $fudge) || $delta / (60 * 60 * 24) == 1) {
+            return 'about a day ago'
+        } else {
+            return sprintf('about %d days ago', ($delta / (60 * 60 * 24));
+	}
     }
 
+    /**
+     * Get a twitter.User representing the entity posting this status message.
+     * @return string
+     */
     public function getUser()
     {
-    '''Get a twitter.User representing the entity posting this status message.
-
-        returns:
-      A twitter.User representing the entity posting this status message
-    '''
         return $this->user;
     }
 
+    /**
+     * Set a twitter.User representing the entity posting this status message.
+     * @param string $user
+     */
     public function setUser($user)
     {
-    '''Set a twitter.User representing the entity posting this status message.
-
-    Args:
-      user:
-        A twitter.User representing the entity posting this status message
-    '''
         $this->user = $user;
     }
 
+    /**
+     * Get the wallclock time for this status message.
+     * @return int
+     */
     public function getNow()
     {
-    '''Get the wallclock time for this status message.
-
-    Used to calculate relative_created_at.    public functionaults to the time
-    the object was instantiated.
-
-        returns:
-      Whatever the status instance believes the current time to be,
-      in seconds since the epoch.
-    '''
-    if $this->now is None:
-      $this->now = $time.time()
+        if($this->now === null) {
+            $this->now = time();
+	}
         return $this->now;
     }
 
+    /**
+     * Set the wallclock time for this status message.
+     * @param int $now
+     */
     public function setNow($now)
     {
-    '''Set the wallclock time for this status message.
-
-    Used to calculate relative_created_at.    public functionaults to the time
-    the object was instantiated.
-
-    Args:
-      now:
-        The wallclock time for this instance.
-    '''
         $this->now = $now;
     }
 
+    /**
+     * Get the geo string for this status
+     * @return string
+     */
     public function getGeo()
     {
         return $this->geo;
     }
 
+    /**
+     * Get the geo string for this status
+     * @param string $geo
+     */
     public function setGeo($geo)
     {
         $this->geo = $geo;
