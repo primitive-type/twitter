@@ -65,258 +65,286 @@ class Status
         $this->withheld_in_countries = isset($data['withheld_in_countries']) ? $data['withheld_in_countries'] : null;
         $this->withheld_scope = isset($data['withheld_scope']) ? $data['withheld_scope'] : null;
     }
-    public function GetCreatedAt($this->:
-    '''Get the time this status message was posted.
+    
+    /**
+     * Get the time this status message was posted.
+     * @return $get_created_at 
+     */
+    public function getCreatedAt()
+    {
+        return $this->created_at;
+    }
 
-    Returns:
-      The time this status message was posted
-    '''
-    return $this->_created_at
+    /**
+     * Set the time this status message was posted
+     * @param string $created_at
+     */
+    public function setCreatedAt($created_at)
+    {
+        $this->created_at = $created_at;
+    }
 
-    public function SetCreatedAt($this-> created_at):
-    '''Set the time this status message was posted.
+    /**
+     * Get the time this status message was posted, in seconds since the epoch
+     * @return int 
+     */
+    public function getCreatedAtInSeconds()
+    {
+        return strtotime($this->created_at);
+    }
 
-    Args:
-      created_at:
-        The time this status message was created
-    '''
-    $this->_created_at = created_at
+    /**
+     * Get the favorited setting of this status message. 
+     * @return boolean
+     */
+    public function getFavorited()
+    {
+        return $this->favorited;
+    }
 
-  created_at = property(GetCreatedAt, SetCreatedAt,
-                        doc='The time this status message was posted.')
+    /**
+     * Set the favorited state of this status message. 
+     * @param boolean $favorited
+     */
+    public function setFavorited($favorited)
+    {
+        $this->favorited = $favorited;
+    }
 
-    public function GetCreatedAtInSeconds($this->:
-    '''Get the time this status message was posted, in seconds since the epoch.
+    /**
+     * Get the favorite count of this status message.
+     * @return int
+     */
+    public function getFavoriteCount()
+    {
+        return $this->favorite_count;
+    }
 
-    Returns:
-      The time this status message was posted, in seconds since the epoch.
-    '''
-    return calendar.timegm(rfc822.parsedate($this->created_at))
+    /**
+     * Set the favorited state of this status message.
+     * @param int $favorite_count
+     */
+    public function setFavoriteCount($favorite_count)
+    {
+        $this->favorite_count = $favorite_count;
+    }
 
-  created_at_in_seconds = property(GetCreatedAtInSeconds,
-                                   doc="The time this status message was "
-                                       "posted, in seconds since the epoch")
+    /**
+     * Get the unique id of this status message.
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
-    public function GetFavorited($this->:
-    '''Get the favorited setting of this status message.
+    /**
+     * Set the unique id of this status message.
+     * @param int $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
 
-    Returns:
-      True if this status message is favorited; False otherwise
-    '''
-    return $this->_favorited
+    /**
+     * Get the screen name of the status that the current status is in reply to
+     * @return string
+     */
+    public function getInReplyToScreenName()
+    {
+        return $this->in_reply_to_screen_name;
+    }
 
-    public function SetFavorited($this-> favorited):
-    '''Set the favorited state of this status message.
+    /**
+     * Set the screen name of the status this status is in reply to
+     * @param string $in_reply_to_screen_name
+     */
+    public function setInReplyToScreenName($in_reply_to_screen_name)
+    {
+        $this->in_reply_to_screen_name = in_reply_to_screen_name;
+    }
 
-    Args:
-      favorited:
-        boolean True/False favorited state of this status message
-    '''
-    $this->_favorited = favorited
+    public function getInReplyToUserId()
+    {
+        return $this->in_reply_to_user_id;
+    }
 
-  favorited = property(GetFavorited, SetFavorited,
-                       doc='The favorited state of this status message.')
+    public function setInReplyToUserId($in_reply_to_user_id)
+    {
+        $this->in_reply_to_user_id = in_reply_to_user_id;
+    }
 
-    public function GetFavoriteCount($this->:
-    '''Get the favorite count of this status message.
+    /**
+     * Get the id of the status that this status is in reply to
+     * @return int
+     */
+    public function getInReplyToStatusId()
+    {
+        return $this->in_reply_to_status_id;
+    }
 
-    Returns:
-      number of times this status message has been favorited
-    '''
-    return $this->_favorite_count
+    /**
+     * Set the id of the status that this status is in reply to
+     * @param int $in_reply_to_status_id
+     */
+    public function setInReplyToStatusId($in_reply_to_status_id)
+    {
+        $this->in_reply_to_status_id = in_reply_to_status_id;
+    }
 
-    public function SetFavoriteCount($this-> favorite_count):
-    '''Set the favorited state of this status message.
+    /**
+     * Return a truncated version of the status
+     * @return string
+     */
+    public function getTruncated()
+    {
+        return $this->truncated;
+    }
 
-    Args:
-      favorite_count:
-        int number of favorites for this status message
-    '''
-    $this->_favorite_count = favorite_count
+    /**
+     * Set the truncated version of the status
+     * @param string $truncated
+     */
+    public function setTruncated($truncated)
+    {
+        $this->truncated = $truncated;
+    }
 
-  favorite_count = property(GetFavoriteCount, SetFavoriteCount,
-                       doc='The number of favorites for this status message.')
+    public function getRetweeted()
+    {
+        return $this->retweeted;
+    }
 
-    public function GetId($this->:
-    '''Get the unique id of this status message.
+    public function setRetweeted($retweeted)
+    {
+        $this->retweeted = $retweeted;
+    }
 
-    Returns:
-      The unique id of this status message
-    '''
-    return $this->_id
+    public function getSource()
+    {
+        return $this->source;
+    }
 
-    public function SetId($this-> id):
-    '''Set the unique id of this status message.
+    public function setSource($source)
+    {
+        $this->source = $source;
+    }
 
-    Args:
-      id:
-        The unique id of this status message
-    '''
-    $this->_id = id
-
-  id = property(GetId, SetId,
-                doc='The unique id of this status message.')
-
-    public function GetInReplyToScreenName($this->:
-    return $this->_in_reply_to_screen_name
-
-    public function SetInReplyToScreenName($this-> in_reply_to_screen_name):
-    $this->_in_reply_to_screen_name = in_reply_to_screen_name
-
-  in_reply_to_screen_name = property(GetInReplyToScreenName, SetInReplyToScreenName,
-                                     doc='')
-
-    public function GetInReplyToUserId($this->:
-    return $this->_in_reply_to_user_id
-
-    public function SetInReplyToUserId($this-> in_reply_to_user_id):
-    $this->_in_reply_to_user_id = in_reply_to_user_id
-
-  in_reply_to_user_id = property(GetInReplyToUserId, SetInReplyToUserId,
-                                 doc='')
-
-    public function GetInReplyToStatusId($this->:
-    return $this->_in_reply_to_status_id
-
-    public function SetInReplyToStatusId($this-> in_reply_to_status_id):
-    $this->_in_reply_to_status_id = in_reply_to_status_id
-
-  in_reply_to_status_id = property(GetInReplyToStatusId, SetInReplyToStatusId,
-                                   doc='')
-
-    public function GetTruncated($this->:
-    return $this->_truncated
-
-    public function SetTruncated($this-> truncated):
-    $this->_truncated = truncated
-
-  truncated = property(GetTruncated, SetTruncated,
-                       doc='')
-
-    public function GetRetweeted($this->:
-    return $this->_retweeted
-
-    public function SetRetweeted($this-> retweeted):
-    $this->_retweeted = retweeted
-
-  retweeted = property(GetRetweeted, SetRetweeted,
-                       doc='')
-
-    public function GetSource($this->:
-    return $this->_source
-
-    public function SetSource($this-> source):
-    $this->_source = source
-
-  source = property(GetSource, SetSource,
-                    doc='')
-
-    public function GetText($this->:
+    public function getText()
+    {
     '''Get the text of this status message.
 
-    Returns:
+        returns:
       The text of this status message.
     '''
-    return $this->_text
+        return $this->text;
+    }
 
-    public function SetText($this-> text):
+    public function setText($text)
+    {
     '''Set the text of this status message.
 
     Args:
       text:
         The text of this status message
     '''
-    $this->_text = text
+        $this->text = $text;
+    }
 
-  text = property(GetText, SetText,
-                  doc='The text of this status message')
-
-    public function GetLocation($this->:
+    public function getLocation()
+    {
     '''Get the geolocation associated with this status message
 
-    Returns:
+        returns:
       The geolocation string of this status message.
     '''
-    return $this->_location
+        return $this->location;
+    }
 
-    public function SetLocation($this-> location):
+    public function setLocation($location)
+    {
     '''Set the geolocation associated with this status message
 
     Args:
       location:
         The geolocation string of this status message
     '''
-    $this->_location = location
+        $this->location = $location;
+    }
 
-  location = property(GetLocation, SetLocation,
-                      doc='The geolocation string of this status message')
-
-    public function GetRelativeCreatedAt($this->:
+    public function getRelativeCreatedAt()
+    {
     '''Get a human readable string representing the posting time
 
-    Returns:
+        returns:
       A human readable string representing the posting time
     '''
-    fudge = 1.25
-    delta  = long($this->now) - long($this->created_at_in_seconds)
+        fudge = $1.25
+        delta  = $long($this->now) - long($this->created_at_in_seconds)
 
-    if delta < (1 * fudge):
-      return 'about a second ago'
-    elif delta < (60 * (1/fudge)):
-      return 'about %d seconds ago' % (delta)
-    elif delta < (60 * fudge):
-      return 'about a minute ago'
-    elif delta < (60 * 60 * (1/fudge)):
-      return 'about %d minutes ago' % (delta / 60)
-    elif delta < (60 * 60 * fudge) or delta / (60 * 60) == 1:
-      return 'about an hour ago'
-    elif delta < (60 * 60 * 24 * (1/fudge)):
-      return 'about %d hours ago' % (delta / (60 * 60))
-    elif delta < (60 * 60 * 24 * fudge) or delta / (60 * 60 * 24) == 1:
-      return 'about a day ago'
-    else:
-      return 'about %d days ago' % (delta / (60 * 60 * 24))
+        if delta < (1 * fudge)
+        {
+          return 'about a second ago'
+        elif delta < (60 * (1/fudge))
+        {
+          return 'about %d seconds ago' % (delta)
+        elif delta < (60 * fudge)
+        {
+          return 'about a minute ago'
+        elif delta < (60 * 60 * (1/fudge))
+        {
+          return 'about %d minutes ago' % (delta / 60)
+        elif delta < (60 * 60 * fudge) or delta / (60 * 60) == 1:
+          return 'about an hour ago'
+        elif delta < (60 * 60 * 24 * (1/fudge))
+        {
+          return 'about %d hours ago' % (delta / (60 * 60))
+        elif delta < (60 * 60 * 24 * fudge) or delta / (60 * 60 * 24) == 1:
+          return 'about a day ago'
+        else:
+          return 'about %d days ago' % (delta / (60 * 60 * 24));
+    }
 
-  relative_created_at = property(GetRelativeCreatedAt,
-                                 doc='Get a human readable string representing '
-                                     'the posting time')
-
-    public function GetUser($this->:
+    public function getUser()
+    {
     '''Get a twitter.User representing the entity posting this status message.
 
-    Returns:
+        returns:
       A twitter.User representing the entity posting this status message
     '''
-    return $this->_user
+        return $this->user;
+    }
 
-    public function SetUser($this-> user):
+    public function setUser($user)
+    {
     '''Set a twitter.User representing the entity posting this status message.
 
     Args:
       user:
         A twitter.User representing the entity posting this status message
     '''
-    $this->_user = user
+        $this->user = $user;
+    }
 
-  user = property(GetUser, SetUser,
-                  doc='A twitter.User representing the entity posting this '
-                      'status message')
-
-    public function GetNow($this->:
+    public function getNow()
+    {
     '''Get the wallclock time for this status message.
 
     Used to calculate relative_created_at.    public functionaults to the time
     the object was instantiated.
 
-    Returns:
+        returns:
       Whatever the status instance believes the current time to be,
       in seconds since the epoch.
     '''
-    if $this->_now is None:
-      $this->_now = time.time()
-    return $this->_now
+    if $this->now is None:
+      $this->now = $time.time()
+        return $this->now;
+    }
 
-    public function SetNow($this-> now):
+    public function setNow($now)
+    {
     '''Set the wallclock time for this status message.
 
     Used to calculate relative_created_at.    public functionaults to the time
@@ -326,176 +354,156 @@ class Status
       now:
         The wallclock time for this instance.
     '''
-    $this->_now = now
+        $this->now = $now;
+    }
 
-  now = property(GetNow, SetNow,
-                 doc='The wallclock time for this status instance.')
+    public function getGeo()
+    {
+        return $this->geo;
+    }
 
-    public function GetGeo($this->:
-    return $this->_geo
+    public function setGeo($geo)
+    {
+        $this->geo = $geo;
+    }
 
-    public function SetGeo($this-> geo):
-    $this->_geo = geo
+    public function getPlace()
+    {
+        return $this->place;
+    }
 
-  geo = property(GetGeo, SetGeo,
-                 doc='')
+    public function setPlace($place)
+    {
+        $this->place = $place;
+    }
 
-    public function GetPlace($this->:
-    return $this->_place
+    public function getCoordinates()
+    {
+        return $this->coordinates;
+    }
 
-    public function SetPlace($this-> place):
-    $this->_place = place
+    public function setCoordinates($coordinates)
+    {
+        $this->coordinates = $coordinates;
+    }
 
-  place = property(GetPlace, SetPlace,
-                   doc='')
+    public function getContributors()
+    {
+        return $this->contributors;
+    }
 
-    public function GetCoordinates($this->:
-    return $this->_coordinates
+    public function setContributors($contributors)
+    {
+        $this->contributors = $contributors;
+    }
 
-    public function SetCoordinates($this-> coordinates):
-    $this->_coordinates = coordinates
+    public function getRetweeted_status()
+    {
+        return $this->retweeted_status;
+    }
 
-  coordinates = property(GetCoordinates, SetCoordinates,
-                         doc='')
+    public function setRetweeted_status($retweeted_status)
+    {
+        $this->retweeted_status = $retweeted_status;
+    }
 
-    public function GetContributors($this->:
-    return $this->_contributors
+    public function getRetweetCount()
+    {
+        return $this->retweet_count;
+    }
 
-    public function SetContributors($this-> contributors):
-    $this->_contributors = contributors
+    public function setRetweetCount($retweet_count)
+    {
+        $this->retweet_count = $retweet_count;
+    }
 
-  contributors = property(GetContributors, SetContributors,
-                          doc='')
+    public function getCurrent_user_retweet()
+    {
+        return $this->current_user_retweet;
+    }
 
-    public function GetRetweeted_status($this->:
-    return $this->_retweeted_status
+    public function setCurrent_user_retweet($current_user_retweet)
+    {
+        $this->current_user_retweet = $current_user_retweet;
+    }
 
-    public function SetRetweeted_status($this-> retweeted_status):
-    $this->_retweeted_status = retweeted_status
+    public function getPossibly_sensitive()
+    {
+        return $this->possibly_sensitive;
+    }
 
-  retweeted_status = property(GetRetweeted_status, SetRetweeted_status,
-                              doc='')
+    public function setPossibly_sensitive($possibly_sensitive)
+    {
+        $this->possibly_sensitive = $possibly_sensitive;
+    }
 
-    public function GetRetweetCount($this->:
-    return $this->_retweet_count
+    public function getScopes()
+    {
+        return $this->scopes;
+    }
 
-    public function SetRetweetCount($this-> retweet_count):
-    $this->_retweet_count = retweet_count
+    public function setScopes($scopes)
+    {
+        $this->scopes = $scopes;
+    }
 
-  retweet_count = property(GetRetweetCount, SetRetweetCount,
-                           doc='')
+    public function getWithheld_copyright()
+    {
+        return $this->withheld_copyright;
+    }
 
-    public function GetCurrent_user_retweet($this->:
-    return $this->_current_user_retweet
+    public function setWithheld_copyright($withheld_copyright)
+    {
+        $this->withheld_copyright = $withheld_copyright;
+    }
 
-    public function SetCurrent_user_retweet($this-> current_user_retweet):
-    $this->_current_user_retweet = current_user_retweet
+    public function getWithheld_in_countries()
+    {
+        return $this->withheld_in_countries;
+    }
 
-  current_user_retweet = property(GetCurrent_user_retweet, SetCurrent_user_retweet,
-                                  doc='')
+    public function setWithheld_in_countries($withheld_in_countries)
+    {
+        $this->withheld_in_countries = $withheld_in_countries;
+    }
 
-    public function GetPossibly_sensitive($this->:
-    return $this->_possibly_sensitive
+    public function getWithheld_scope()
+    {
+        return $this->withheld_scope;
+    }
 
-    public function SetPossibly_sensitive($this-> possibly_sensitive):
-    $this->_possibly_sensitive = possibly_sensitive
+    public function setWithheld_scope($withheld_scope)
+    {
+        $this->withheld_scope = $withheld_scope;
+    }
 
-  possibly_sensitive = property(GetPossibly_sensitive, SetPossibly_sensitive,
-                                doc='')
-
-    public function GetScopes($this->:
-    return $this->_scopes
-
-    public function SetScopes($this-> scopes):
-    $this->_scopes = scopes
-
-  scopes = property(GetScopes, SetScopes, doc='')
-
-    public function GetWithheld_copyright($this->:
-    return $this->_withheld_copyright
-
-    public function SetWithheld_copyright($this-> withheld_copyright):
-    $this->_withheld_copyright = withheld_copyright
-
-  withheld_copyright = property(GetWithheld_copyright, SetWithheld_copyright,
-                                doc='')
-
-    public function GetWithheld_in_countries($this->:
-    return $this->_withheld_in_countries
-
-    public function SetWithheld_in_countries($this-> withheld_in_countries):
-    $this->_withheld_in_countries = withheld_in_countries
-
-  withheld_in_countries = property(GetWithheld_in_countries, SetWithheld_in_countries,
-                                doc='')
-
-    public function GetWithheld_scope($this->:
-    return $this->_withheld_scope
-
-    public function SetWithheld_scope($this-> withheld_scope):
-    $this->_withheld_scope = withheld_scope
-
-  withheld_scope = property(GetWithheld_scope, SetWithheld_scope,
-                                doc='')
-
-    public function __ne__($this-> other):
-    return not $this->__eq__(other)
-
-    public function __eq__($this-> other):
-    try:
-      return other and \
-             $this->created_at == other.created_at and \
-             $this->id == other.id and \
-             $this->text == other.text and \
-             $this->location == other.location and \
-             $this->user == other.user and \
-             $this->in_reply_to_screen_name == other.in_reply_to_screen_name and \
-             $this->in_reply_to_user_id == other.in_reply_to_user_id and \
-             $this->in_reply_to_status_id == other.in_reply_to_status_id and \
-             $this->truncated == other.truncated and \
-             $this->retweeted == other.retweeted and \
-             $this->favorited == other.favorited and \
-             $this->favorite_count == other.favorite_count and \
-             $this->source == other.source and \
-             $this->geo == other.geo and \
-             $this->place == other.place and \
-             $this->coordinates == other.coordinates and \
-             $this->contributors == other.contributors and \
-             $this->retweeted_status == other.retweeted_status and \
-             $this->retweet_count == other.retweet_count and \
-             $this->current_user_retweet == other.current_user_retweet and \
-             $this->possibly_sensitive == other.possibly_sensitive and \
-             $this->scopes == other.scopes and \
-             $this->withheld_copyright == other.withheld_copyright and \
-             $this->withheld_in_countries == other.withheld_in_countries and \
-             $this->withheld_scope == other.withheld_scope
-    except AttributeError:
-      return False
-
-    public function __str__($this->:
+    public function __toString()
+    {
     '''A string representation of this twitter.Status instance.
 
     The return value is the same as the JSON string representation.
 
-    Returns:
+        returns:
       A string representation of this twitter.Status instance.
     '''
-    return $this->AsJsonString()
+        return $this->AsJsonString();
+    }
 
     public function AsJsonString($this->:
     '''A JSON string representation of this twitter.Status instance.
 
-    Returns:
+        returns:
       A JSON string representation of this twitter.Status instance
    '''
-    return simplejson.dumps($this->AsDict(), sort_keys=True)
+        return simplejson.dumps($this->AsDict(), sort_keys=True);
+    }
 
-    public function AsDict($this->:
+    public function AsDict()
     '''A dict representation of this twitter.Status instance.
 
     The return value uses the same key names as the JSON representation.
 
-    Return:
+        return:
       A dict representing this twitter.Status instance
     '''
     data = {}
@@ -557,15 +565,18 @@ class Status
       data['withheld_in_countries'] = $this->withheld_in_countries
     if $this->withheld_scope:
       data['withheld_scope'] = $this->withheld_scope
-    return data
+        return data
 
   @staticmethod
-    public function NewFromJsonDict(data):
+    }
+
+    public function NewFromJsonDict(data)
+    {
     '''Create a new instance based on a JSON dict.
 
     Args:
       data: A JSON dict, as converted from the JSON in the twitter API
-    Returns:
+        returns:
       A twitter.Status instance
     '''
     if 'user' in data:
@@ -597,7 +608,7 @@ class Status
         media = data['entities']['media']
       else:
         media = []
-    return Status(created_at=data.get('created_at', None),
+        return Status(created_at=data.get('created_at', None),
                   favorited=data.get('favorited', None),
                   favorite_count=data.get('favorite_count', None),
                   id=data.get('id', None),
