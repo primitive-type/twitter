@@ -37,7 +37,6 @@ class Api
         $debug_http = false
     ) {
         $this->setCache($cache);
-        $this->urllib         = urllib2;
         $this->cache_timeout  = static::DEFAULT_CACHE_TIMEOUT;
         $this->input_encoding = $input_encoding;
         $this->use_gzip       = $use_gzip_compression;
@@ -45,7 +44,7 @@ class Api
         $this->oauth_consumer = null;
         $this->shortlink_size = 19;
 
-        $this->initializeRequestHeaders(request_headers);
+        $this->initializeRequestHeaders($request_headers);
         $this->initializeUserAgent();
         $this->initializeDefaultParameters();
 
@@ -144,7 +143,7 @@ class Api
 
         if use_gzip_compression is None:
           use_gzip = self._use_gzip
-        else:
+        } else {
           use_gzip = use_gzip_compression
 
         # Set up compression
@@ -166,10 +165,10 @@ class Api
 
           if http_method == "POST":
             encoded_post_data = req.to_postdata()
-          else:
+          } else {
             encoded_post_data = None
             url = req.to_url()
-        else:
+        } else {
           url = self._BuildUrl(url, extra_params=extra_params)
           encoded_post_data = self._EncodePostData(post_data)
 
@@ -178,11 +177,11 @@ class Api
           response = opener.open(url, encoded_post_data)
           url_data = self._DecompressGzippedResponse(response)
           opener.close()
-        else:
+        } else {
           # Unique keys are a combination of the url and the oAuth Consumer Key
           if self._consumer_key:
             key = self._consumer_key + ':' + url
-          else:
+          } else {
             key = url
 
           # See if it has been cached before
@@ -197,7 +196,7 @@ class Api
             except urllib2.HTTPError, e:
               print e
             opener.close()
-          else:
+          } else {
             url_data = self._cache.Get(key)
 
         # Always return the latest version
@@ -229,6 +228,7 @@ class Api
      * @param string $locale Language of the search query. Currently only 'ja' is effective.
      * @param string $result_type Type of result which should be returned. "mixed", "recent" and "popular"
      * @param string $include_entities If true, each tweet will include a node called "entities"
+     *
      * @return array[League\Twitter\Status]
      */
     public function getSearch(
@@ -250,39 +250,30 @@ class Api
         if ($since_id) {
             $parameters['since_id'] = (int) $since_id;
         }
-
         if ($max_id) {
             $parameters['max_id'] = (int) $max_id;
         }
-
         if ($until) {
             $parameters['until'] = $until;
         }
-
         if ($lang) {
             $parameters['lang'] = $lang;
         }
-
         if ($locale) {
             $parameters['locale'] = $locale;
         }
-
         if (is_null($term) and is_null($geocode)) {
             return array();
         }
-
         if (! is_null($term)) {
             $parameters['q'] = $term;
         }
-
         if (! is_null($geocode)) {
             $parameters['geocode'] = implode(',', map(str, geocode));
         }
-
         if ($include_entities) {
             $parameters['include_entities'] = 1;
         }
-
         
         $parameters['count'] = (int) $count;
 
@@ -305,7 +296,8 @@ class Api
      * @param string $term Term to search by.
      * @param string $page Page of results to return. Default is 1. [Optional]
      * @param string $count Number of results to return.  Default is 20. [Optional]
-     * @param string $include_entities If True, each tweet will include a node called "entities". [Optional]
+     * @param string $include_entities If true, each tweet will include a node called "entities". [Optional]
+     *
      * @return array[League\Twitter\User]
      */
     public function getUsersSearch($term, $page = 1, $count = 20, $include_entities = null)
@@ -334,6 +326,7 @@ class Api
      * Get the current top trending topics
      * 
      * @param array $exclude Appends the exclude parameter as a request parameter.
+     *
      * @return array[League\Twitter\Trend]
      */
     public function getTrendsCurrent($exclude = null)
@@ -346,6 +339,7 @@ class Api
      * 
      * @param array $woeid The Yahoo! Where On Earth ID for a location.
      * @param array $exclude Appends the exclude parameter as a request parameter.
+     *
      * @return array[League\Twitter\Trend]
      */
     public function getTrendsWoeid($woeid, $exclude = null)
@@ -377,31 +371,30 @@ class Api
      * The League\Twitter\Api instance must be authenticated.
      * 
      * @param int $count Specifies the number of statuses to retrieve. May not be 
-     *  greater than 200. Defaults to 20. [Optional]
+     *  greater than 200. Defaults to 20.
      * @param int $since_id Returns results with an ID greater than (that is, more recent
      *  than) the specified ID. There are limits to the number of
      *  Tweets which can be accessed through the API. If the limit of
      *  Tweets has occurred since the since_id, the since_id will be
-     *  forced to the oldest ID available. [Optional]
+     *  forced to the oldest ID available.
      * @param int $max_id Returns results with an ID less than (that is, older than) or
-     *  equal to the specified ID. [Optional]
+     *  equal to the specified ID.
      * @param bool $trim_user  When true, each tweet returned in a timeline will include a user
      *  object including only the status authors numerical ID. Omit this
-     *  parameter to receive the complete user object. [Optional]
+     *  parameter to receive the complete user object.
      * @param bool $exclude_replies  This parameter will prevent replies from appearing in the
      *  returned timeline. Using exclude_replies with the count
      *  parameter will mean you will receive up-to count tweets -
      *  this is because the count parameter retrieves that many
      *  tweets before filtering out retweets and replies.
-     *  [Optional]
      * @param bool $contributor_details  This parameter enhances the contributors element of the
      *  status response to include the screen_name of the contributor.
      *  By default only the user_id of the contributor is included.
-     *  [Optional]
      * @param bool $include_entities  The entities node will be disincluded when set to false.
      *  This node offers a variety of metadata about the tweet in a
      *  discreet structure, including: user_mentions, urls, and
-     *  hashtags. [Optional]
+     *  hashtags
+     *
      * @return array[League\Twitter\Status]
      */
     public function getHomeTimeline(
@@ -692,6 +685,7 @@ class Api
      *   coordinates a tweet as been sent from. [Optional]
      * @param bool $trim_user If true the returned payload will only contain the 
      *   user IDs, se the payload will contain the full user data item. [Optional]
+     *
      * @return League\Twitter\Status
      */
     public postUpdate(
@@ -751,6 +745,7 @@ class Api
      *   last message.  Note that Twitter strips trailing '...' strings from messages.  
      *   Consider using the unicode \u2026 character (horizontal ellipsis) instead.
      * @param array args See League\Twitter::postUpdate() for a list of accepted parameters.
+     *
      * @return League\Twitter\Status
      */
     public function postUpdates($status, $continuation = null, array $args = null) {
@@ -780,10 +775,11 @@ class Api
      * @param int $original_id The ID of the status to be retweeted.
      * @param bool $trim_user If true the returned payload will only contain the 
      *   user IDs, se the payload will contain the full user data item.
+     *
      * @return League\Twitter\Status
      */
-    public function postRetweet($original_id, $trim_user = false) {
-
+    public function postRetweet($original_id, $trim_user = false)
+    {
         if (! $this->_oauth_consumer) {
             throw new Exception("The League\Twitter\Api instance must be authenticated.");
         }
@@ -814,7 +810,7 @@ class Api
      * The League\Twitter\Api instance must be authenticated.
      *
      * @param int $since_id Returns results with an ID greater than (that is, more recent
-     *   than) the specified ID. There are limits to the number of Tweets which can be 
+     *   than) the specified ID. Th pear channel-discover pear.phpmd.orgere are limits to the number of Tweets which can be 
      *   accessed through the API. If the limit of Tweets has occurred since the since_id, 
      *   the since_id will be forced to the oldest ID available.
      * @param int $count The number of status messages to retrieve.
@@ -822,6 +818,7 @@ class Api
      *   equal to the specified ID.
      * @param int $trim_user If true the returned payload will only contain the user IDs,
      *   otherwise the payload will contain the full user data item.
+     *
      * @return array[League\Twitter\Status]
      */
     public function getUserRetweets(
@@ -845,6 +842,7 @@ class Api
      *   equal to the specified ID.
      * @param int $trim_user If true the returned payload will only contain the user IDs,
      *   otherwise the payload will contain the full user data item.
+     *
      * @return array[League\Twitter\Status]
      */
     public function getReplies($since_id = null, $count = null, $max_id = null, $trim_user = false) {
@@ -858,6 +856,7 @@ class Api
      * @param int $count The number of status messages to retrieve.
      * @param int $trim_user If true the returned payload will only contain the user IDs,
      *   otherwise the payload will contain the full user data item.
+     *
      * @return array[League\Twitter\Status]
      */
     public function getRetweets($status_id, count=null, trim_user=false):
@@ -893,6 +892,7 @@ class Api
      * @param bool $trim_user When True, the user object for each tweet will only be an ID.
      * @param bool $include_entities When True, the tweet entities will be included.
      * @param bool $include_user_entities When True, the user entities will be included.
+     *
      * @return array[League\Twitter\Status]
      */
     public function getRetweetsOfMe(
@@ -960,6 +960,7 @@ class Api
      *   control what result page Twitter returns.
      * @param bool $skip_status If true the statuses will not be returned in the user items.
      * @param bool $include_user_entities When true, the user entities will be included.
+     *
      * @return array[League\Twitter\User]
      */
     public function getFriends(
@@ -1019,10 +1020,11 @@ class Api
      * The League\Twitter\Api instance must be authenticated.
      *
      * @param int $user_id The id of the user to retrieve the id list for.
-     * @param int $screen_name The screen_name of the user to retrieve the id list for.
+     * @param string $screen_name The screen_name of the user to retrieve the id list for.
      * @param int $cursor Specifies the Twitter API Cursor location to start at.
      * @param bool $stringify_ids If true then twitter will return the ids as strings instead of integers.
      * @param int $count The number of status messages to retrieve.
+     *
      * @return array[int]
      */
     public function getFriendIDs(
@@ -1080,6 +1082,7 @@ class Api
      * @param foo $cursor Specifies the Twitter API Cursor location to start at.
      * @param foo $stringify_ids if True then twitter will return the ids as strings instead of integers.
      * @param foo $count The number of status messages to retrieve. [Optional]
+     *
      * @return array[int]
      */
     public function getFollowerIDs(
@@ -1088,8 +1091,8 @@ class Api
         $cursor = -1, 
         $stringify_ids = false, 
         $count = null
-    ) {
-
+    )
+    {
         $url = sprint('%s/followers/ids.json', $this->base_url);
 
         if (! $this->_oauth_consumer) {
@@ -1124,7 +1127,7 @@ class Api
                 if ($data['next_cursor'] == 0 or $data['next_cursor'] == $data['previous_cursor']) {
                     break;
                 }
-              else:
+              } else {
                 $cursor = $data['next_cursor'];
             else {
                 break;
@@ -1134,392 +1137,446 @@ class Api
         return $result;
     }
 
-    public function getFollowers(user_id=null, screen_name=null, cursor=-1, skip_status=false, include_user_entities=false):
-    '''Fetch the sequence of twitter.User instances, one for each follower
+    /**
+     * Fetch an array of users, one for each follower
+     *
+     * The League\Twitter\Api instance must be authenticated.
+     *
+     * @param int $user_id The twitter id of the user whose followers you are fetching.
+     * @param string $screen_name The twitter name of the user whose followers you are fetching.
+     * @param int $cursor Should be set to -1 for the initial call and then is used to control what result page Twitter returns 
+     * @param bool $stringify_ids If true then twitter will return the ids as strings instead of integers.
+     * @param bool $include_user_entities When true the user entities will be included.
+     *
+     * @return array[League\Twitter\User]
+     */
+    public function getFollowers($user_id = null, $screen_name = null, $cursor = -1, $skip_status = false, $include_user_entities = false)
+    {
+        if (! $this->_oauth_consumer) {
+            throw new Exception("League\Twitter\Api instance must be authenticated");
+        }
+        $url = "{$this->base_url}/followers/list.json";
+        result = []
+        $parameters = array();
+        
+        if (! is_null($user_id)) {
+            $parameters['user_id'] = $user_id;
+        }
 
-    The League\Twitter\Api instance must be authenticated.
+        if (! is_null($screen_name)) {
+            $parameters['screen_name'] = $screen_name;
+        }
 
-    Args:
-      user_id:
-        The twitter id of the user whose followers you are fetching.
-        If not specified, defaults to the authenticated user. [Optional]
-      screen_name:
-        The twitter name of the user whose followers you are fetching.
-        If not specified, defaults to the authenticated user. [Optional]
-      cursor:
-        Should be set to -1 for the initial call and then is used to
-        control what result page Twitter returns [Optional(ish)]
-      skip_status:
-        If True the statuses will not be returned in the user items.
-        [Optional]
-      include_user_entities:
-        When True, the user entities will be included.
+        if ($skip_status !== false) {
+            $parameters['skip_status'] = true;
+        }
 
-    Returns:
-      A sequence of twitter.User instances, one for each follower
-    '''
-    if (! $this->_oauth_consumer) {
-        throw new Exception("League\Twitter\Api instance must be authenticated")
-    url = '%s/followers/list.json' % $this->base_url
-    result = []
-    $parameters = array();
-    if user_id is not null:
-      parameters['user_id'] = user_id
-    if screen_name is not null:
-      parameters['screen_name'] = screen_name
-    if skip_status:
-      parameters['skip_status'] = True
-    if include_user_entities:
-      parameters['include_user_entities'] = True
-    while True:
-      parameters['cursor'] = cursor
-      $json = $this->fetchUrl($url, 'GET', $parameters);
-      $data = $this->parseAndCheckTwitter($json);
-      result += [User::newFromJsonArray(x) for x in data['users']]
-      if 'next_cursor' in data:
-        if data['next_cursor'] == 0 or data['next_cursor'] == data['previous_cursor']:
-          break
-        else:
-          cursor = data['next_cursor']
-      else:
-        break
-    return result
+        if ($include_user_entities !== false) {
+            $parameters['include_user_entities'] = true;
+        }
 
-    def UsersLookup(user_id=null, screen_name=null, users=null, include_entities = true):
-    '''Fetch extended information for the specified users.
+        while (true) {
+            $parameters['cursor'] = $cursor;
+            $json = $this->fetchUrl($url, 'GET', $parameters);
+            $data = $this->parseAndCheckTwitter($json);
+            
+            $result += [User::newFromJsonArray(x) for x in data['users']];
+            
+            if (isset($data['next_cursor'])) {
+                if ($data['next_cursor'] == 0 or $data['next_cursor'] === $data['previous_cursor'] {
+                    break;
+                } else {
+                    $cursor = $data['next_cursor'];
+                }
+            } else {
+                break;
+            }
+        }
+        return $result;
+    }
 
-    Users may be specified either as lists of either user_ids,
-    screen_names, or twitter.User objects. The list of users that
-    are queried is the union of all specified parameters.
+    /**
+     * Fetch extended information for the specified users.
+     *
+     * Users may be specified either as lists of either user_ids,
+     * screen_names, or League\Twitter\User objects. The list of users that
+     * are queried is the union of all specified parameters.
+     *
+     * The League\Twitter\Api instance must be authenticated.
+     *
+     * @param int $user_id The twitter id of the user you are looking up
+     * @param string $screen_name The twitter csv string of users you are looking up
+     * @param array[League\Twitter\User] $users User objects to look up
+     * @param bool $include_user_entities The entities node that may appear within embedded 
+     *   statuses will be disincluded when set to false
+     *
+     * @return array[League\Twitter\User]
+     */
+    public function usersLookup($user_id = null, $screen_name = null, $users = null, $include_entities  = true)
+    {
+        if (! $this->_oauth_consumer) {
+            throw new Exception("The League\Twitter\Api instance must be authenticated.");
+        }
 
-    The League\Twitter\Api instance must be authenticated.
+        if (! $user_id and ! $screen_name and ! $users) {
+            throw new Exception("Specify at least one of user_id, screen_name, or users.");
+        }
+        
+        $url = "{$this->base_url}/users/lookup.json";
+        
+        $parameters = array();
+        $uids = array();
+        
+        if ($user_id) {
+            $uids[] = $user_id;
+        }
 
-    Args:
-      user_id:
-        A list of user_ids to retrieve extended information.
-        [Optional]
-      screen_name:
-        A list of screen_names to retrieve extended information.
-        [Optional]
-      users:
-        A list of twitter.User objects to retrieve extended information.
-        [Optional]
-      include_entities:
-        The entities node that may appear within embedded statuses will be
-        disincluded when set to false.
-        [Optional]
+        if ($users) {
+            $uids = array_merge($uids, array_map(function($user) {
+                return $user->id;
+            }, $users));
+        }
+        
+        if ($uids !== array()) {
+            $parameters['user_id'] = implode(',', $uids);
+        }
+        
+        if ($screen_name) {
+            $parameters['screen_name'] = implode(',', $screen_name);
+        }
 
-    Returns:
-      A list of twitter.User objects for the requested users
-    '''
+        if (! $include_entities)
+            $parameters['include_entities'] = 'false';
+        }
+        
+        $json = $this->fetchUrl($url, 'GET', $parameters);
+        try {
+          $data = $this->parseAndCheckTwitter($json);
+        } catch (Exception $e) {
+            if ($e->getCode() == 34) {
+                $data = array();
+            } else {
+                throw new Exception;
+            }
+        }
 
-    if (! $this->_oauth_consumer) {
-        throw new Exception("The League\Twitter\Api instance must be authenticated.");
-    if not user_id and not screen_name and not users:
-        throw new Exception("Specify at least one of user_id, screen_name, or users.")
-    url = '%s/users/lookup.json' % $this->base_url
-    $parameters = array();
-    uids = list()
-    if user_id:
-      uids.extend(user_id)
-    if users:
-      uids.extend([u.id for u in users])
-    if len(uids):
-      parameters['user_id'] = ','.join(["%s" % u for u in uids])
-    if screen_name:
-      parameters['screen_name'] = ','.join(screen_name)
-    if not include_entities:
-      parameters['include_entities'] = 'false'
-    $json = $this->fetchUrl($url, 'GET', $parameters);
-    try:
-      $data = $this->parseAndCheckTwitter($json);
-    except TwitterError as e:
-        t = e.args[0]
-        if len(t) == 1 and ('code' in t[0]) and (t[0]['code'] == 34):
-          data = []
-        else:
-            raise
+        return array_map(function($user) {
+            return User::newFromJsonArray($user);
+        }, $data);
+    }
 
-    return [User::newFromJsonArray(u) for u in data]
+    /**
+     * Fetch extended information for the specified users.
+     *
+     * Users may be specified either as arrays of either user_ids,
+     * screen_names, or League\Twitter\User objects. The list of users that
+     * are queried is the union of all specified parameters.
+     *
+     * The League\Twitter\Api instance must be authenticated.
+     *
+     * @param int $user_id The twitter id of the user to retrieve
+     * @param string $screen_name The twitter name of the user whose followers you are fetching.
+     * @param bool $include_user_entities If set to false, the 'entities' node will not be included
+     *
+     * @return League\Twitter\User
+     */
+    public function getUser($user_id = null, $screen_name = null, $include_entities = true)
+    {
+        $url  = "{$this->base_url}/users/show.json";
+        $parameters = array();
 
-    public function getUser(user_id=null, screen_name=null, include_entities = true):
-    '''Returns a single user.
+        if (! $this->_oauth_consumer) {
+            throw new Exception("The League\Twitter\Api instance must be authenticated.");
+        }
 
-    The League\Twitter\Api instance must be authenticated.
+        if ($user_id) {
+            $parameters['user_id'] = $user_id;
+        } elseif ($screen_name) {
+            $parameters['screen_name'] = $screen_name;
+        } else {
+            throw new Exception("Specify at least one of user_id or screen_name.");
+        }
 
-    Args:
-      user_id:
-        The id of the user to retrieve.
-        [Optional]
-      screen_name:
-        The screen name of the user for whom to return results for. Either a
-        user_id or screen_name is required for this method.
-        [Optional]
-      include_entities:
-        if set to false, the 'entities' node will not be included.
-        [Optional]
+        if (! $include_entities) {
+            $parameters['include_entities'] = 'false';
+        }
 
+        $json = $this->fetchUrl($url, 'GET', $parameters);
+        $data = $this->parseAndCheckTwitter($json);
+        return User::newFromJsonArray(data);
+    }
 
-    Returns:
-      A twitter.User instance representing that user
-    '''
-    url  = '%s/users/show.json' % ($this->base_url)
-    $parameters = array();
+    /**
+     * Returns a list of the direct messages sent to the authenticating user
+     *
+     * The League\Twitter\Api instance must be authenticated.
+     *
+     * @param int $since_id Returns results with an ID greater than (that is, more recent 
+     *   than) the specified ID. There are limits to the number of Tweets which can be 
+     *   accessed through the API. If the limit of Tweets has occurred since the since_id, 
+     *   the since_id will be forced to the oldest ID available.
+     * @param int $max_id Returns results with an ID less than (that is, older than) or
+     *   equal to the specified ID.
+     * @param int $count Specifies the number of direct messages to try and retrieve, 
+     *   up to a maximum of 200. The value of count is best thought of as a limit to the
+     *   number of Tweets to return because suspended or deleted content is removed after 
+     *   the count has been applied.
+     * @param bool $include_entities The entities node will not be included when set to false.
+     * @param bool $skip_status When set to True statuses will not be included in the returned 
+     *   user objects.
+     *
+     * @return array[League\Twitter\DirectMessage]
+     */
+    public function getDirectMessages($since_id = null, $max_id = null, $count = null, $include_entities = true, $skip_status = false)
+    {
+        $url = "{$this->base_url}/direct_messages.json";
+        
+        if (! $this->_oauth_consumer) {
+            throw new Exception("The League\Twitter\Api instance must be authenticated.");
+        }
+     
+        $parameters = array();
+     
+        if ($since_id) {
+            $parameters['since_id'] = $since_id;
+        }
+        
+        if ($max_id) {
+            $parameters['max_id'] = $max_id;
+        }
+        
+        if ($count) {
+          if (! is_numeric($count)) {
+              throw new Exception("count must be an integer");
+          }
+          $parameters['count'] = (int) $count;     
+        }
 
-    if (! $this->_oauth_consumer) {
-        throw new Exception("The League\Twitter\Api instance must be authenticated.");
+        if (! $include_entities) {
+            $parameters['include_entities'] = 'false';
+        }
 
-    if user_id:
-      parameters['user_id'] = user_id
-    elif screen_name:
-      parameters['screen_name'] = screen_name
-    else:
-        throw new Exception("Specify at least one of user_id or screen_name.")
+        if ($skip_status !== false) {
+            $parameters['skip_status'] = 1;
+        }
 
-    if not include_entities:
-      parameters['include_entities'] = 'false'
+        $json = $this->fetchUrl($url, 'GET', $parameters);
+        $data = $this->parseAndCheckTwitter($json);
+        
+        return array_map(function($message) {
+            return DirectMessage::newFromJsonArray(x);
+        }, $data);
+    }
+    
+    /**
+     * Returns a list of the direct messages sent by the authenticating user
+     *
+     * The League\Twitter\Api instance must be authenticated.
+     *
+     * @param int $since_id Returns results with an ID greater than (that is, more recent 
+     *   than) the specified ID. There are limits to the number of Tweets which can be 
+     *   accessed through the API. If the limit of Tweets has occurred since the $since_id, 
+     *   the $since_id will be forced to the oldest ID available.
+     * @param int $max_id Returns results with an ID less than (that is, older than) or
+     *   equal to the specified ID.
+     * @param int $count Specifies the number of direct messages to try and retrieve, 
+     *   up to a maximum of 200. The value of count is best thought of as a limit to the
+     *   number of Tweets to return because suspended or deleted content is removed after 
+     *   the count has been applied.
+     * @param int $page Specifies the page of results to retrieve. Note: there are pagination limits.
+     * @param bool $include_entities The entities node will not be included when set to false.
+     *
+     * @return array[League\Twitter\DirectMessage]
+     */
+    public function getSentDirectMessages(
+        $since_id = null,
+        $max_id = null,
+        $count = null,
+        $page = null,
+        $include_entities = true
+    )
+    {
+        $url = "{$this->base_url}/direct_messages/sent.json";
+        
+        if (! $this->_oauth_consumer) {
+            throw new Exception("The League\Twitter\Api instance must be authenticated.");
+        }
+        $parameters = array();
+        
+        if ($since_id) {
+            $parameters['since_id'] = $since_id;
+        }
+        if ($page) {
+            $parameters['page'] = $page;
+        }
+        if ($max_id) {
+            $parameters['max_id'] = $max_id;
+        }
+        if ($count) {
+            if (! is_numeric($count)) {
+                throw new Exception("count must be an integer");
+            }
+            $parameters['count'] = (int) $count;
+        }
 
-    $json = $this->fetchUrl($url, 'GET', $parameters);
-    $data = $this->parseAndCheckTwitter($json);
-    return User::newFromJsonArray(data)
+        if (! $include_entities) {
+            $parameters['include_entities'] = 'false';
+        }
 
-    public function getDirectMessages(since_id=null, max_id=null, count=null, include_entities = true, skip_status=false):
-    '''Returns a list of the direct messages sent to the authenticating user.
+        $json = $this->fetchUrl($url, 'GET', $parameters);
+        $data = $this->parseAndCheckTwitter($json);
 
-    The League\Twitter\Api instance must be authenticated.
+        return array_map(function($message) {
+            return DirectMessage::newFromJsonArray(x);
+        }, $data);
+    }
 
-    Args:
-      since_id:
-        Returns results with an ID greater than (that is, more recent
-        than) the specified ID. There are limits to the number of
-        Tweets which can be accessed through the API. If the limit of
-        Tweets has occurred since the since_id, the since_id will be
-        forced to the oldest ID available. [Optional]
-      max_id:
-        Returns results with an ID less than (that is, older than) or
-        equal to the specified ID. [Optional]
-      count:
-        Specifies the number of direct messages to try and retrieve, up to a
-        maximum of 200. The value of count is best thought of as a limit to the
-        number of Tweets to return because suspended or deleted content is
-        removed after the count has been applied. [Optional]
-      include_entities:
-        The entities node will not be included when set to false.
-        [Optional]
-      skip_status:
-        When set to True statuses will not be included in the returned user
-        objects. [Optional]
+    /**
+     * Returns a list of the direct messages sent by the authenticating user
+     *
+     * The League\Twitter\Api instance must be authenticated.
+     *
+     * @param string $text The message text to be posted.  Must be less than 140 characters.
+     * @param int $user_id A list of user_ids to retrieve extended information.
+     * @param string $screen_name A list of screen_names to retrieve extended information.
+     *
+     * @return League\Twitter\DirectMessage
+     */
+    public function postDirectMessage($text, $user_id = null, $screen_name = null)
+    {
+        if (! $this->_oauth_consumer) {
+            throw new Exception("The League\Twitter\Api instance must be authenticated.");
+        }
 
-    Returns:
-      A sequence of twitter.DirectMessage instances
-    '''
-    url = '%s/direct_messages.json' % $this->base_url
-    if (! $this->_oauth_consumer) {
-        throw new Exception("The League\Twitter\Api instance must be authenticated.");
-    $parameters = array();
-    if since_id:
-        $parameters['since_id'] = $since_id;
-    if max_id:
-        $parameters['max_id'] = $max_id;
-    if count:
-      try:
-        parameters['count'] = int(count)
-      except:
-          throw new Exception("count must be an integer")
-    if not include_entities:
-      parameters['include_entities'] = 'false'
-    if skip_status:
-      parameters['skip_status'] = 1
-    $json = $this->fetchUrl($url, 'GET', $parameters);
-    $data = $this->parseAndCheckTwitter($json);
-    return [DirectMessage.NewFromJsonDict(x) for x in data]
+        $url  = "{$this->base_url}/direct_messages/new.json";
+        $post = array('text' => $text);
+        
+        if ($user_id) {
+            $post['user_id'] = $user_id;
+        } elseif ($screen_name) {
+            $post['screen_name'] = $screen_name;
+        } else {
+            throw new Exception("Specify at least one of user_id or screen_name.");
+        }
 
-    public function getSentDirectMessages(since_id=null, max_id=null, count=null, page=null, include_entities = true):
-    '''Returns a list of the direct messages sent by the authenticating user.
+        $json = $this->fetchUrl($url, 'POST', $post)
+        $data = $this->parseAndCheckTwitter($json);
 
-    The League\Twitter\Api instance must be authenticated.
+        return DirectMessage::newFromJsonArray($data);
+    }
 
-    Args:
-      since_id:
-        Returns results with an ID greater than (that is, more recent
-        than) the specified ID. There are limits to the number of
-        Tweets which can be accessed through the API. If the limit of
-        Tweets has occured since the since_id, the since_id will be
-        forced to the oldest ID available. [Optional]
-      max_id:
-        Returns results with an ID less than (that is, older than) or
-        equal to the specified ID. [Optional]
-      count:
-        Specifies the number of direct messages to try and retrieve, up to a
-        maximum of 200. The value of count is best thought of as a limit to the
-        number of Tweets to return because suspended or deleted content is
-        removed after the count has been applied. [Optional]
-      page:
-        Specifies the page of results to retrieve.
-        Note: there are pagination limits. [Optional]
-      include_entities:
-        The entities node will not be included when set to false.
-        [Optional]
+    /**
+     * Destroys the direct message specified in the required ID parameter.
+     *
+     * The League\Twitter\Api instance must be authenticated, and the
+     * authenticating user must be the recipient of the specified direct message.
+     *
+     * @param int $id The id of the direct message to be destroyed.
+     * @param string $include_entities The entities node will not be included when set to false.
+     *
+     * @return League\Twitter\DirectMessage
+     */
+    public function destroyDirectMessage($id, $include_entities = true)
+    {
+        $url  = "{$this->base_url}/direct_messages/destroy.json";
+        $post = array('id' => $id); 
 
-    Returns:
-      A sequence of twitter.DirectMessage instances
-    '''
-    url = '%s/direct_messages/sent.json' % $this->base_url
-    if (! $this->_oauth_consumer) {
-        throw new Exception("The League\Twitter\Api instance must be authenticated.");
-    $parameters = array();
-    if since_id:
-        $parameters['since_id'] = $since_id;
-    if page:
-      parameters['page'] = page
-    if max_id:
-        $parameters['max_id'] = $max_id;
-    if count:
-      try:
-        parameters['count'] = int(count)
-      except:
-          throw new Exception("count must be an integer")
-    if not include_entities:
-      parameters['include_entities'] = 'false'
-    $json = $this->fetchUrl($url, 'GET', $parameters);
-    $data = $this->parseAndCheckTwitter($json);
-    return [DirectMessage.NewFromJsonDict(x) for x in data]
+        if (! $include_entities) {
+            $post['include_entities'] = 'false';
+        }
 
-    public function postDirectMessage(text, user_id=null, screen_name=null):
-    '''Post a twitter direct message from the authenticated user
+        $json = $this->fetchUrl($url, $post)
+        $data = $this->parseAndCheckTwitter($json);
+        
+        return DirectMessage::newFromJsonArray($data);
+    }
 
-    The League\Twitter\Api instance must be authenticated.
+    /**
+     * Befriends the user specified by the user_id or screen_name.
+     *
+     * The League\Twitter\Api instance must be authenticated.
+     *
+     * @param int $user_id A user_id to follow
+     * @param string $screen_name A screen_name to follow
+     * @param bool $follow Set to false to disable notifications for the target user
+     *
+     * @return League\Twitter\User
+     */
+    public function createFriendship($user_id = null, $screen_name = null, $follow = true)
+    {
+        $url  = "{$this->base_url}/friendships/create.json";
+        
+        $data = array();
 
-    Args:
-      text: The message text to be posted.  Must be less than 140 characters.
-      user_id:
-        A list of user_ids to retrieve extended information.
-        [Optional]
-      screen_name:
-        A list of screen_names to retrieve extended information.
-        [Optional]
+        if ($user_id) {
+            $data['user_id'] = $user_id;
+        } elseif ($screen_name) {
+            $data['screen_name'] = $screen_name;
+        } else {
+            throw new Exception("Specify at least one of user_id or screen_name.")
+        }
 
-    Returns:
-      A twitter.DirectMessage instance representing the message posted
-    '''
-    if (! $this->_oauth_consumer) {
-        throw new Exception("The League\Twitter\Api instance must be authenticated.");
-    url  = '%s/direct_messages/new.json' % $this->base_url
-    data = {'text': text}
-    if user_id:
-      data['user_id'] = user_id
-    elif screen_name:
-      data['screen_name'] = screen_name
-    else:
-        throw new Exception("Specify at least one of user_id or screen_name.")
-    $json = $this->fetchUrl($url, $data)
-    $data = $this->parseAndCheckTwitter($json);
-    return DirectMessage.NewFromJsonDict(data)
+        $data['follow'] = $follow ? 'true' : 'false';
 
-    def DestroyDirectMessage(id, include_entities = true):
-    '''Destroys the direct message specified in the required ID parameter.
+        $json = $this->fetchUrl($url, 'POST', $data);
+        $data = $this->parseAndCheckTwitter($json);
 
-    The League\Twitter\Api instance must be authenticated, and the
-    authenticating user must be the recipient of the specified direct
-    message.
+        return User::newFromJsonArray($data);
+    }
 
-    Args:
-      id: The id of the direct message to be destroyed
+    /**
+     * Discontinues friendship with a user_id or screen_name.
+     *
+     * The League\Twitter\Api instance must be authenticated.
+     *
+     * @param int $user_id A user_id to follow
+     * @param string $screen_name A screen_name to follow
+     *
+     * @return League\Twitter\User
+     */
+    public function destroyFriendship($user_id = null, $screen_name = null)
+    {
+        $url  = "{$this->base_url}/friendships/destroy.json";
+        $data = array();
+        if ($user_id) {
+            $data['screen_name'] = $user_id;
+        } elseif ($screen_name) {
+            $data['screen_name'] = $screen_name;
+        } else {
+            throw new Exception("Specify at least one of user_id or screen_name.");
+        }
+        $json = $this->fetchUrl($url, 'POST', $data);
+        $data = $this->parseAndCheckTwitter($json);
+        return User::newFromJsonArray(data)
+    }
 
-    Returns:
-      A twitter.DirectMessage instance representing the message destroyed
-    '''
-    url  = '%s/direct_messages/destroy.json' % $this->base_url
-    data = {'id': id}
-    if not include_entities:
-      data['include_entities'] = 'false'
-    $json = $this->fetchUrl($url, $data)
-    $data = $this->parseAndCheckTwitter($json);
-    return DirectMessage.NewFromJsonDict(data)
+    /**
+     * Favorites the specified status object or id as the authenticating user.
+     *
+     * The League\Twitter\Api instance must be authenticated.
+     *
+     * @param int $id The id of the twitter status to mark as a favorite
+     * @param League\Twitter\Status $status The League\Twitter\Status object to mark as a favorite
+     * @param bool include_entities The entities node will be omitted when set to false.
+     *
+     * @return League\Twitter\Status
+     */
+    public function createFavorite(status=null, id=null, include_entities = true)
+    {
 
-    public function createFriendship(user_id=null, screen_name=null, follow = true):
-    '''Befriends the user specified by the user_id or screen_name.
-
-    The League\Twitter\Api instance must be authenticated.
-
-    Args:
-      user_id:
-        A user_id to follow [Optional]
-      screen_name:
-        A screen_name to follow [Optional]
-      follow:
-        Set to false to disable notifications for the target user
-    Returns:
-      A twitter.User instance representing the befriended user.
-    '''
-    url  = '%s/friendships/create.json' % ($this->base_url)
-    data = {}
-    if user_id:
-      data['user_id'] = user_id
-    elif screen_name:
-      data['screen_name'] = screen_name
-    else:
-        throw new Exception("Specify at least one of user_id or screen_name.")
-    if follow:
-      data['follow'] = 'true'
-    else:
-      data['follow'] = 'false'
-    $json = $this->fetchUrl($url, $data)
-    $data = $this->parseAndCheckTwitter($json);
-    return User::newFromJsonArray(data)
-
-    def DestroyFriendship(user_id=null, screen_name=null):
-    '''Discontinues friendship with a user_id or screen_name.
-
-    The League\Twitter\Api instance must be authenticated.
-
-    Args:
-      user_id:
-        A user_id to unfollow [Optional]
-      screen_name:
-        A screen_name to unfollow [Optional]
-    Returns:
-      A twitter.User instance representing the discontinued friend.
-    '''
-    url  = '%s/friendships/destroy.json' % $this->base_url
-    data = {}
-    if user_id:
-      data['user_id'] = user_id
-    elif screen_name:
-      data['screen_name'] = screen_name
-    else:
-        throw new Exception("Specify at least one of user_id or screen_name.")
-    $json = $this->fetchUrl($url, $data)
-    $data = $this->parseAndCheckTwitter($json);
-    return User::newFromJsonArray(data)
-
-    public function createFavorite(status=null, id=null, include_entities = true):
-    '''Favorites the specified status object or id as the authenticating user.
-    Returns the favorite status when successful.
-
-    The League\Twitter\Api instance must be authenticated.
-
-    Args:
-      id:
-        The id of the twitter status to mark as a favorite.
-        [Optional]
-      status:
-        The twitter.Status object to mark as a favorite.
-        [Optional]
-      include_entities:
-        The entities node will be omitted when set to false.
+      
     Returns:
       A twitter.Status instance representing the newly-marked favorite.
     '''
-    url  = '%s/favorites/create.json' % $this->base_url
-    data = {}
+    $url  = "{$this->base_url}/favorites/create.json";
+    $data = array();
     if id:
       data['id'] = id
-    elif status:
+    elseif status:
       data['id'] = status.id
-    else:
+    } else {
         throw new Exception("Specify id or status")
-    if not include_entities:
+    if (! $include_entities) {
       data['include_entities'] = 'false'
     $json = $this->fetchUrl($url, $data)
     $data = $this->parseAndCheckTwitter($json);
@@ -1543,15 +1600,15 @@ class Api
     Returns:
       A twitter.Status instance representing the newly-unmarked favorite.
     '''
-    url  = '%s/favorites/destroy.json' % $this->base_url
-    data = {}
+    $url  = "{$this->base_url}/favorites/destroy.json";
+    $data = array();
     if id:
       data['id'] = id
-    elif status:
+    elseif status:
       data['id'] = status.id
-    else:
+    } else {
         throw new Exception("Specify id or status")
-    if not include_entities:
+    if (! $include_entities) {
       data['include_entities'] = 'false'
     $json = $this->fetchUrl($url, $data)
     $data = $this->parseAndCheckTwitter($json);
@@ -1578,20 +1635,20 @@ class Api
     '''
     $parameters = array();
 
-    url = '%s/favorites/list.json' % $this->base_url
+    $url = "{$this->base_url}/favorites/list.json";
 
-    if user_id:
-      parameters['user_id'] = user_id
-    elif screen_name:
+    if ($user_id) {
+        $parameters['user_id'] = $user_id;
+    elseif ($screen_name) {
       parameters['screen_name'] = user_id
 
-    if since_id:
+    if ($since_id) {
       try:
         parameters['since_id'] = long(since_id)
       except:
           throw new Exception("since_id must be an integer")
 
-    if max_id:
+    if ($max_id) {
       try:
         parameters['max_id'] = long(max_id)
       except:
@@ -1651,7 +1708,7 @@ class Api
       A sequence of twitter.Status instances, one for each mention of the user.
     '''
 
-    url = '%s/statuses/mentions_timeline.json' % $this->base_url
+    $url = "{$this->base_url}/statuses/mentions_timeline.json";
 
     if (! $this->_oauth_consumer) {
         throw new Exception("The League\Twitter\Api instance must be authenticated.");
@@ -1663,12 +1720,12 @@ class Api
         parameters['count'] = int(count)
       except:
           throw new Exception("count must be an integer")
-    if since_id:
+    if ($since_id) {
       try:
         parameters['since_id'] = long(since_id)
       except:
           throw new Exception("since_id must be an integer")
-    if max_id:
+    if ($max_id) {
       try:
         parameters['max_id'] = long(max_id)
       except:
@@ -1677,8 +1734,8 @@ class Api
       parameters['trim_user'] = 1
     if contributor_details:
       parameters['contributor_details'] = 'true'
-    if not include_entities:
-      parameters['include_entities'] = 'false'
+    if (! $include_entities) {
+        $parameters['include_entities'] = 'false';
 
     $json = $this->fetchUrl($url, 'GET', $parameters);
     $data = $this->parseAndCheckTwitter($json);
@@ -1701,7 +1758,7 @@ class Api
     Returns:
       A twitter.List instance representing the new list
     '''
-    url = '%s/lists/create.json' % $this->base_url
+    $url = "{$this->base_url}/lists/create.json";
 
     if (! $this->_oauth_consumer) {
         throw new Exception("The League\Twitter\Api instance must be authenticated.");
@@ -1739,25 +1796,25 @@ class Api
     Returns:
       A twitter.List instance representing the removed list.
     '''
-    url  = '%s/lists/destroy.json' % $this->base_url
-    data = {}
+    $url  = "{$this->base_url}/lists/destroy.json";
+    $data = array();
     if list_id:
       try:
         data['list_id']= long(list_id)
       except:
           throw new Exception("list_id must be an integer")
-    elif slug:
+    elseif slug:
       data['slug'] = slug
       if owner_id:
         try:
           data['owner_id'] = long(owner_id)
         except:
             throw new Exception("owner_id must be an integer")
-      elif owner_screen_name:
+      elseif owner_screen_name:
         data['owner_screen_name'] = owner_screen_name
-      else:
+      } else {
           throw new Exception("Identify list by list_id or owner_screen_name/owner_id and slug")
-    else:
+    } else {
         throw new Exception("Identify list by list_id or owner_screen_name/owner_id and slug")
 
     $json = $this->fetchUrl($url, $data)
@@ -1787,27 +1844,27 @@ class Api
     Returns:
       A twitter.List instance representing the list subscribed to
     '''
-    url  = '%s/lists/subscribers/create.json' % ($this->base_url)
+    $url  = "{$this->base_url}/lists/subscribers/create.json";
     if (! $this->_oauth_consumer) {
         throw new Exception("The League\Twitter\Api instance must be authenticated.");
-    data = {}
+    $data = array();
     if list_id:
       try:
         data['list_id']= long(list_id)
       except:
           throw new Exception("list_id must be an integer")
-    elif slug:
+    elseif slug:
       data['slug'] = slug
       if owner_id:
         try:
           data['owner_id'] = long(owner_id)
         except:
             throw new Exception("owner_id must be an integer")
-      elif owner_screen_name:
+      elseif owner_screen_name:
         data['owner_screen_name'] = owner_screen_name
-      else:
+      } else {
           throw new Exception("Identify list by list_id or owner_screen_name/owner_id and slug")
-    else:
+    } else {
         throw new Exception("Identify list by list_id or owner_screen_name/owner_id and slug")
     $json = $this->fetchUrl($url, $data)
     $data = $this->parseAndCheckTwitter($json);
@@ -1836,27 +1893,27 @@ class Api
     Returns:
       A twitter.List instance representing the removed list.
     '''
-    url  = '%s/lists/subscribers/destroy.json' % ($this->base_url)
+    $url  = "{$this->base_url}/lists/subscribers/destroy.json";
     if (! $this->_oauth_consumer) {
         throw new Exception("The League\Twitter\Api instance must be authenticated.");
-    data = {}
+    $data = array();
     if list_id:
       try:
         data['list_id']= long(list_id)
       except:
           throw new Exception("list_id must be an integer")
-    elif slug:
+    elseif slug:
       data['slug'] = slug
       if owner_id:
         try:
           data['owner_id'] = long(owner_id)
         except:
             throw new Exception("owner_id must be an integer")
-      elif owner_screen_name:
+      elseif owner_screen_name:
         data['owner_screen_name'] = owner_screen_name
-      else:
+      } else {
           throw new Exception("Identify list by list_id or owner_screen_name/owner_id and slug")
-    else:
+    } else {
         throw new Exception("Identify list by list_id or owner_screen_name/owner_id and slug")
     $json = $this->fetchUrl($url, $data)
     $data = $this->parseAndCheckTwitter($json);
@@ -1890,7 +1947,7 @@ class Api
     if (! $this->_oauth_consumer) {
         throw new Exception("League\Twitter\Api instance must be authenticated")
 
-    url = '%s/lists/subscriptions.json' % ($this->base_url)
+    $url = "{$this->base_url}/lists/subscriptions.json";
     $parameters = array();
 
     try:
@@ -1903,14 +1960,14 @@ class Api
     except:
         throw new Exception("count must be an integer")
 
-    if user_id is not null:
+    if (! is_null($user_id)) {
       try:
         parameters['user_id'] = long(user_id)
       except:
           throw new Exception('user_id must be an integer')
-    elif screen_name is not null:
-      parameters['screen_name'] = screen_name
-    else:
+    elseif (! is_null($screen_name)) {
+        $parameters['screen_name'] = $screen_name;
+    } else {
         throw new Exception('Specify user_id or screen_name')
 
     $json = $this->fetchUrl($url, 'GET', $parameters);
@@ -1944,51 +2001,51 @@ class Api
     if (! $this->_oauth_consumer) {
         throw new Exception("League\Twitter\Api instance must be authenticated")
 
-    url = '%s/lists/ownerships.json' % $this->base_url
+    $url = "{$this->base_url}/lists/ownerships.json";
     result = []
     $parameters = array();
-    if user_id is not null:
+    if (! is_null($user_id)) {
       try:
         parameters['user_id'] = long(user_id)
       except:
           throw new Exception('user_id must be an integer')
-    elif screen_name is not null:
-      parameters['screen_name'] = screen_name
-    else:
+    elseif (! is_null($screen_name)) {
+        $parameters['screen_name'] = $screen_name;
+    } else {
         throw new Exception('Specify user_id or screen_name')
     if (! is_null($count)) {
       parameters['count'] = count
 
-    while True:
-      parameters['cursor'] = cursor
+    while (true) {
+        $parameters['cursor'] = $cursor;
       $json = $this->fetchUrl($url, 'GET', $parameters);
       $data = $this->parseAndCheckTwitter($json);
       result += [List.NewFromJsonDict(x) for x in data['lists']]
       if 'next_cursor' in data:
         if data['next_cursor'] == 0 or data['next_cursor'] == data['previous_cursor']:
           break
-        else:
+        } else {
           cursor = data['next_cursor']
-      else:
+      } else {
         break
-    return result
+    return $result;
 
     def VerifyCredentials(self):
-    '''Returns a twitter.User instance if the authenticating user is valid.
+    '''Returns a League\Twitter\User instance if the authenticating user is valid.
 
     Returns:
-      A twitter.User instance representing that user if the
+      A League\Twitter\User instance representing that user if the
       credentials are valid, null otherwise.
     '''
     if (! $this->_oauth_consumer) {
         throw new Exception("Api instance must first be given user credentials.")
-    url = '%s/account/verify_credentials.json' % $this->base_url
+    $url = "{$this->base_url}/account/verify_credentials.json";
     try:
       json = $this->_FetchUrl(url, no_cache = true)
     except urllib2.HTTPError, http_error:
       if http_error.code == httplib.UNAUTHORIZED:
         return null
-      else:
+      } else {
         raise http_error
     $data = $this->parseAndCheckTwitter($json);
     return User::newFromJsonArray(data)
@@ -2002,7 +2059,7 @@ class Api
     '''
     if cache == DEFAULT_CACHE:
       $this->_cache = _FileCache()
-    else:
+    } else {
       $this->_cache = cache
 
     def SetUrllib(urllib):
@@ -2083,7 +2140,7 @@ class Api
     if resources is not null:
       parameters['resources'] = resources
 
-    url  = '%s/application/rate_limit_status.json' % $this->base_url
+    $url  = "{$this->base_url}/application/rate_limit_status.json";
     json = $this->_FetchUrl(url, parameters=parameters, no_cache = true)
     $data = $this->parseAndCheckTwitter($json);
     return data
@@ -2137,7 +2194,7 @@ class Api
       # Add it to the existing query
       if query:
         query += '&' + extra_query
-      else:
+      } else {
         query = extra_query
 
     # Return the rebuilt URL
@@ -2146,7 +2203,7 @@ class Api
     def _InitializeRequestHeaders(request_headers):
     if request_headers:
       $this->_request_headers = request_headers
-    else:
+    } else {
       $this->_request_headers = {}
 
     def _InitializeUserAgent(self):
@@ -2161,14 +2218,14 @@ class Api
     raw_data = response.read()
     if response.headers.get('content-encoding', null) == 'gzip':
       url_data = gzip.GzipFile(fileobj=StringIO.StringIO(raw_data)).read()
-    else:
+    } else {
       url_data = raw_data
     return url_data
 
     def _Encode(s):
     if $this->_input_encoding:
       return unicode(s, $this->_input_encoding).encode('utf-8')
-    else:
+    } else {
       return unicode(s).encode('utf-8')
 
     def _EncodeParameters(parameters):
@@ -2186,7 +2243,7 @@ class Api
     '''
     if parameters is null:
       return null
-    else:
+    } else {
       return urllib.urlencode(dict([(k, $this->_Encode(v)) for k, v in parameters.items() if v is not null]))
 
     def _EncodePostData(post_data):
@@ -2205,7 +2262,7 @@ class Api
     '''
     if post_data is null:
       return null
-    else:
+    } else {
       return urllib.urlencode(dict([(k, $this->_Encode(v)) for k, v in post_data.items()]))
 
     def _ParseAndCheckTwitter(json):
@@ -2279,12 +2336,12 @@ class Api
 
     if post_data:
       http_method = "POST"
-    else:
+    } else {
       http_method = "GET"
 
     if $this->_debug_http:
       _debug = 1
-    else:
+    } else {
       _debug = 0
 
     http_handler  = $this->_urllib.HTTPHandler(debuglevel=_debug)
@@ -2307,7 +2364,7 @@ class Api
 
     if use_gzip_compression is null:
       use_gzip = $this->_use_gzip
-    else:
+    } else {
       use_gzip = use_gzip_compression
 
     # Set up compression
@@ -2329,10 +2386,10 @@ class Api
 
       if http_method == "POST":
         encoded_post_data = req.to_postdata()
-      else:
+      } else {
         encoded_post_data = null
         url = req.to_url()
-    else:
+    } else {
       url = $this->_BuildUrl(url, extra_params=extra_params)
       encoded_post_data = $this->_EncodePostData(post_data)
 
@@ -2341,11 +2398,11 @@ class Api
       response = opener.open(url, encoded_post_data)
       url_data = $this->_DecompressGzippedResponse(response)
       opener.close()
-    else:
+    } else {
       # Unique keys are a combination of the url and the oAuth Consumer Key
       if $this->_consumer_key:
         key = $this->_consumer_key + ':' + url
-      else:
+      } else {
         key = url
 
       # See if it has been cached before
@@ -2360,7 +2417,7 @@ class Api
         except urllib2.HTTPError, e:
           print e
         opener.close()
-      else:
+      } else {
         url_data = $this->_cache.Get(key)
 
     # Always return the latest version
