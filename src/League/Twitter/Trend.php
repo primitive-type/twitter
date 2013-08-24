@@ -6,6 +6,11 @@ namespace League\Twitter;
  */
 class Trend
 {
+     protected $name;
+     protected $query;
+     protected $timestamp;
+     protected $url;
+
     /**
      * Constructor
      * @param string $name
