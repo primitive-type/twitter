@@ -490,7 +490,7 @@ class Status
         return $this->AsJsonString();
     }
 
-    public function AsJsonString($this->:
+    public function AsJsonString(
     '''A JSON string representation of this twitter.Status instance.
 
         returns:
