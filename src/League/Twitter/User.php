@@ -1,5 +1,4 @@
-<?php
-namespace League\Twitter;
+<?php namespace League\Twitter;
 
 class User
 {
@@ -70,6 +69,7 @@ class User
      * Static method to return a new instance of the user object
      *
      * @param array $data
+     *
      * @return \League\Twitter\User 
      */
     public static function newFromJsonArray($data)
@@ -640,24 +640,23 @@ class User
      */
     public function __toString()
     {
-        return $this->asJsonString();
+        return $this->toJson();
     }
 
     /**
      * Method for printing the object as a string
      * @return string a json representation of the object
      */
-    public function AsJsonString()
+    public function toJson()
     {
-        $object_array = $this->asArray();
-    return json_encode($object_array);
+        return json_encode($this->toArray());
     }
 
     /**
      * Method to return the User object as an array
      * @return array $data
      */
-    public function asArray()
+    public function toArray()
     {
         $data = array();
         if ($this->id !== null) {
