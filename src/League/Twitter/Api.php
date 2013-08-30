@@ -1,5 +1,7 @@
 <?php namespace League\Twitter;
 
+use Guzzle\Http\Client;
+
 class Api
 {
     # cache for 1 minute
@@ -28,17 +30,19 @@ class Api
         $consumer_secret = null,
         $access_token_key = null,
         $access_token_secret = null,
-        $input_encoding = null,
         $request_headers = null,
         $cache = static::DEFAULT_CACHE,
+        $http = static::DEFAULT_HTTP,
         $shortner = null,
         $base_url = null,
         $use_gzip_compression = false,
         $debug_http = false
     ) {
-        $this->setCache($cache);
+        $this->setCacheHandler($cache);
+        
+        $this->setHttpHandler(new Client());
+
         $this->cache_timeout  = static::DEFAULT_CACHE_TIMEOUT;
-        $this->input_encoding = $input_encoding;
         $this->use_gzip       = $use_gzip_compression;
         $this->debug_http     = $debug_http;
         $this->oauth_consumer = null;
@@ -49,9 +53,9 @@ class Api
         $this->initializeDefaultParameters();
 
         if (is_null($base_url)) {
-          $this->base_url = 'https://api.twitter.com/1.1'
+            $this->base_url = 'https://api.twitter.com/1.1';
         } else {
-          $this->base_url = $base_url
+            $this->base_url = $base_url;
         }
 
         if (! is_null($consumer_key) and (is_null($access_token_key) or is_null($access_token_secret)) {
@@ -98,109 +102,42 @@ class Api
     /**
      * Fetch a URL, optionally caching for a specified time.
      *
-     * @param string $url URL to retrieve.
-     * @param string $method HTTP Method, only GET or POST are acceptable.
-     * @param array $parameters An array of key/value data for POST/GET params.
-     * @param bool $no_cache If true, overrides the cache on the current request.
-     * @param bool $use_gzip_compression If True, tells the server to gzip-compress the 
-     *   response. It does not apply to POST requests. Defaults to null, which will get 
-     *   the value to use from the instance variable $this->_use_gzip.
+     * @param string $url
+     * @param string $http_method
+     * @param array $parameters
+     * @param bool $options
+     *
      * @return string
      */
     protected function fetchUrl(
         $url,
         $http_method = 'GET',
         array $parameters = null,
-        $no_cache = null,
-        $use_gzip_compression = null
-    ) {
+        $options = array()
+    )
+    {
+        $no_cache = isset($options['no_cache']) ? $options['no_cache'] : null;
+        $use_gzip_compression = isset($options['use_gzip_compression']) ? $options['use_gzip_compression'] : null;
    
-        $extra_params = $this->_default_params;
+        $extra_params = $this->default_params;
 
         if ($parameters) {
             $extra_params = array_merge($extra_params, $parameters);
         }
 
-        $debug = (bool) $this->_debug_http;
+        $client = $this->http_handler;
 
-        http_handler  = self._urllib.HTTPHandler(debuglevel=_debug)
-        https_handler = self._urllib.HTTPSHandler(debuglevel=_debug)
-        http_proxy = os.environ.get('http_proxy')
-        https_proxy = os.environ.get('https_proxy')
-
-        if http_proxy is None or  https_proxy is None :
-          proxy_status = False
-        else :
-          proxy_status = True
-
-        opener = self._urllib.OpenerDirector()
-        opener.add_handler(http_handler)
-        opener.add_handler(https_handler)
-
-        if proxy_status is True :
-          proxy_handler = self._urllib.ProxyHandler({'http':str(http_proxy),'https': str(https_proxy)})
-          opener.add_handler(proxy_handler)
-
-        if use_gzip_compression is None:
-          use_gzip = self._use_gzip
+        if ($http_method === 'GET') {
+            $params = $this->encodeParameters($parameters));
+            $request = $client->get($url.'?'.$params, $this->request_headers);
+        } elseif ($http_method === 'POST') {
+            $params = $this->encodePostData($parameters);
+            $request = $client->post($http_method, $this->request_headers, $params);
         } else {
-          use_gzip = use_gzip_compression
+            throw new Exception("The Twitter API only supports GET/POST because it's lazy and weird.");
+        }
 
-        # Set up compression
-        if use_gzip and not post_data:
-          opener.addheaders.append(('Accept-Encoding', 'gzip'))
-
-        if self._oauth_consumer is not None:
-          if post_data and http_method == "POST":
-            parameters = post_data.copy()
-
-          req = oauth.Request.from_consumer_and_token(self._oauth_consumer,
-                                                      token=self._oauth_token,
-                                                      http_method=http_method,
-                                                      http_url=url, parameters=parameters)
-
-          req.sign_request(self._signature_method_hmac_sha1, self._oauth_consumer, self._oauth_token)
-
-          headers = req.to_header()
-
-          if http_method == "POST":
-            encoded_post_data = req.to_postdata()
-          } else {
-            encoded_post_data = None
-            url = req.to_url()
-        } else {
-          url = self._BuildUrl(url, extra_params=extra_params)
-          encoded_post_data = self._EncodePostData(post_data)
-
-        # Open and return the URL immediately if we're not going to cache
-        if encoded_post_data or no_cache or not self._cache or not self._cache_timeout:
-          response = opener.open(url, encoded_post_data)
-          url_data = self._DecompressGzippedResponse(response)
-          opener.close()
-        } else {
-          # Unique keys are a combination of the url and the oAuth Consumer Key
-          if self._consumer_key:
-            key = self._consumer_key + ':' + url
-          } else {
-            key = url
-
-          # See if it has been cached before
-          last_cached = self._cache.GetCachedTime(key)
-
-          # If the cached version is outdated then fetch another and store it
-          if not last_cached or time.time() >= last_cached + self._cache_timeout:
-            try:
-              response = opener.open(url, encoded_post_data)
-              url_data = self._DecompressGzippedResponse(response)
-              self._cache.Set(key, url_data)
-            except urllib2.HTTPError, e:
-              print e
-            opener.close()
-          } else {
-            url_data = self._cache.Get(key)
-
-        # Always return the latest version
-        return url_data
+        return $request->send()->getBody();
     }
 
     /**
@@ -826,7 +763,8 @@ class Api
         $since_id = null, 
         $max_id = null, 
         $trim_user = false
-    ) {
+    )
+    {
         return $this->getUserTimeline($since_id, $count, $max_id, $trim_user, $exclude_replies = true, $include_rts = true);
     }
 
@@ -963,13 +901,15 @@ class Api
      *
      * @return array[League\Twitter\User]
      */
-    public function getFriends(
-        $user_id = null, 
-        $screen_name = null, 
-        $cursor = -1, 
-        $skip_status = false, 
-        $include_user_entities = false
-    ) {
+    public function getFriends($args)
+    {
+        extract($args);
+
+        isset($user_id) or $user_id = null;
+        isset($screen_name) or $screen_name = null;
+        isset($cursor) or $cursor = -1;
+        isset($skip_status) or $skip_status = false;
+        isset($include_user_entities) or $include_user_entities = false;
 
         if (! $this->_oauth_consumer) {
             throw new Exception("League\Twitter\Api instance must be authenticated");
@@ -2050,16 +1990,6 @@ class Api
     }
 
     /**
-     * Override the default http.
-     * 
-     * @param string $http
-     */
-    public function setHttpHandler($http)
-    {
-        $this->http_handler = $http;
-    }
-
-    /**
      * Override the default cache timeout.
      * 
      * @param int $cache_timeout
@@ -2070,13 +2000,24 @@ class Api
     }
 
     /**
+     * Override the default http.
+     * 
+     * @param mixed $http
+     */
+    public function setHttpHandler($http)
+    {
+        $this->http_client = $http;
+    }
+
+
+    /**
      * Override the default user agent.
      * 
      * @param string $user_agent
      */
     public function setUserAgent($user_agent)
     {
-        $this->_request_headers['User-Agent'] = $user_agent;
+        $this->request_headers['User-Agent'] = $user_agent;
     }
 
     /**
@@ -2088,9 +2029,9 @@ class Api
      */
     public function setXTwitterHeaders(client, url, version)
     {
-        $this->_request_headers['X-Twitter-Client'] = $client;
-        $this->_request_headers['X-Twitter-Client-URL'] = $url;
-        $this->_request_headers['X-Twitter-Client-Version'] = $version;
+        $this->request_headers['X-Twitter-Client'] = $client;
+        $this->request_headers['X-Twitter-Client-URL'] = $url;
+        $this->request_headers['X-Twitter-Client-Version'] = $version;
     }
 
     /**
@@ -2104,7 +2045,7 @@ class Api
      */
     public function setSource($source)
     {
-        $this->_default_params['source'] = $source;
+        $this->default_params['source'] = $source;
     }
 
     /**
@@ -2181,7 +2122,6 @@ class Api
 
         // Add any additional path elements to the path
         if ($path_elements) {
-
             // Filter out the path elements that have a value of null
             $p = [i for i in $path_elements if i];
 
@@ -2207,225 +2147,113 @@ class Api
         return http_build_url($url_parts);
     }
 
-    def _InitializeRequestHeaders(request_headers):
-    if request_headers:
-      $this->_request_headers = request_headers
-    } else {
-      $this->_request_headers = {}
+    protected function initializeRequestHeaders($request_headers)
+    {
+        if ($request_headers):
+            $this->request_headers = $request_headers;
+        } else {
+            $this->request_headers = array();
+        }
+    }
 
-    def _InitializeUserAgent(self):
-    user_agent = 'Python-urllib/%s (python-twitter/%s)' % \
-                 ($this->_urllib.__version__, __version__)
-    $this->SetUserAgent(user_agent)
+    protected function initializeUserAgent()
+    {
+        $user_agent = "League\Twitter PHP Library v{$this->version}";
+        $this->setUserAgent($user_agent);
+    }
 
-    def _InitializeDefaultParameters(self):
-    $this->_default_params = array();
+    protected initializeDefaultParameters()
+    {
+        $this->default_params = array();
+    }
 
-    def _DecompressGzippedResponse(response):
-    raw_data = response.read()
-    if response.headers.get('content-encoding', null) == 'gzip':
-      url_data = gzip.GzipFile(fileobj=StringIO.StringIO(raw_data)).read()
-    } else {
-      url_data = raw_data
-    return url_data
+    protected decompressGzippedResponse($response)
+    {
+        $raw_data = $response->getBody();
 
-    def _Encode(s):
-    if $this->_input_encoding:
-      return unicode(s, $this->_input_encoding).encode('utf-8')
-    } else {
-      return unicode(s).encode('utf-8')
+        if ($response->headers['content-encoding'] === 'gzip') {
+            return gzip.GzipFile(fileobj=StringIO.StringIO(raw_data)).read();
+        }
 
-    def _EncodeParameters(parameters):
-    '''Return a string in key=value&key=value form
+        return $raw_data;
+    }
 
-    Values of null are not included in the output string.
+    /**
+     * Return a string in key=value&key=value form
+     */
+    protected function encodeParameters($parameters)
+    {
+        if (!empty($parameters) {
+            return null;
+        }
 
-    Args:
-      parameters:
-        A dict of (key, value) tuples, where value is encoded as
-        specified by $this->_encoding
+        $utf8_params = array();
+        foreach ($parameters as $key => $value) {
+            if (is_null($value)) continue;
+            $utf8_params[$key] => utf8_encode($value);
+        }
 
-    Returns:
-      A URL-encoded string in "key=value&key=value" form
-    '''
-    if parameters is null:
-      return null
-    } else {
-      return urllib.urlencode(dict([(k, $this->_Encode(v)) for k, v in parameters.items() if v is not null]))
+        return http_build_query($utf8_params);
+    }
 
-    def _EncodePostData(post_data):
-    '''Return a string in key=value&key=value form
+    /**
+     * Return a string in key=value&key=value form
+     */
+    protect function encodePostData($post_data)
+    {
+        if (is_null($post_data)) {
+            return null;
+        }
 
-    Values are assumed to be encoded in the format specified by $this->_encoding,
-    and are subsequently URL encoded.
+        $utf8_params = array();
+        foreach ($post_data as $key => $value) {
+            $utf8_params[$key] => utf8_encode($value);
+        }
 
-    Args:
-      post_data:
-        A dict of (key, value) tuples, where value is encoded as
-        specified by $this->_encoding
+        return http_build_query($utf8_params);
+    }
 
-    Returns:
-      A URL-encoded string in "key=value&key=value" form
-    '''
-    if post_data is null:
-      return null
-    } else {
-      return urllib.urlencode(dict([(k, $this->_Encode(v)) for k, v in post_data.items()]))
+    /**
+     * Try and parse the JSON returned from Twitter and return
+     * an empty dictionary if there is any error. This is a purely
+     * defensive check because during some Twitter network outages
+     * it will return an HTML failwhale page.
+     */
+    protected function parseAndCheckTwitter($json)
+    {
+        try {
+            $data = json_decode($json);
+            $this->checkForTwitterError($data);
+        } catch (Exception $e) {
+            if (strpos($json, '<title>Twitter / Over capacity</title>')) {
+                throw new Exception("Capacity Error");
+            }
+            if (strpos($json, '<title>Twitter / Error</title>')) {
+                throw new Exception("Technical Error");
+            }
+        }
 
-    def _ParseAndCheckTwitter(json):
-    """Try and parse the JSON returned from Twitter and return
-    an empty dictionary if there is any error. This is a purely
-    defensive check because during some Twitter network outages
-    it will return an HTML failwhale page."""
-    try:
-      data = simplejson.loads(json)
-      $this->_CheckForTwitterError(data)
-    except ValueError:
-      if "<title>Twitter / Over capacity</title>" in json:
-          throw new Exception("Capacity Error")
-      if "<title>Twitter / Error</title>" in json:
-          throw new Exception("Technical Error")
-        throw new Exception("json decoding")
+        if ($data === false) {
+            throw new Exception("Invalid JSON");
+        }
 
-    return data
+        return $data;
+    }
 
-    def _CheckForTwitterError(data):
-    """Raises a TwitterError if twitter returns an error message.
-
-    Args:
-      data:
-        A python dict created from the Twitter json response
-
-    Raises:
-      TwitterError wrapping the twitter error message if one exists.
-    """
-    # Twitter errors are relatively unlikely, so it is faster
-    # to check first, rather than try and catch the exception
-    if 'error' in data:
-        throw new Exception(data['error'])
-    if 'errors' in data:
-        throw new Exception(data['errors'])
-
-    def _FetchUrl(
-                url,
-                post_data=null,
-                parameters=null,
-                no_cache=null,
-                use_gzip_compression=null):
-    '''Fetch a URL, optionally caching for a specified time.
-
-    Args:
-      url:
-        The URL to retrieve
-      post_data:
-        A dict of (str, unicode) key/value pairs.
-        If set, POST will be used.
-      parameters:
-        A dict whose key/value pairs should encoded and added
-        to the query string. [Optional]
-      no_cache:
-        If true, overrides the cache on the current request
-      use_gzip_compression:
-        If True, tells the server to gzip-compress the response.
-        It does not apply to POST requests.
-        Defaults to null, which will get the value to use from
-        the instance variable $this->_use_gzip [Optional]
-
-    Returns:
-      A string containing the body of the response.
-    '''
-    # Build the extra parameters dict
-    extra_params = {}
-    if $this->_default_params:
-      extra_params.update($this->_default_params)
-    if parameters:
-      extra_params.update(parameters)
-
-    if post_data:
-      http_method = "POST"
-    } else {
-      http_method = "GET"
-
-    if $this->_debug_http:
-      _debug = 1
-    } else {
-      _debug = 0
-
-    http_handler  = $this->_urllib.HTTPHandler(debuglevel=_debug)
-    https_handler = $this->_urllib.HTTPSHandler(debuglevel=_debug)
-    http_proxy = os.environ.get('http_proxy')
-    https_proxy = os.environ.get('https_proxy')
-
-    if http_proxy is null or  https_proxy is null :
-      proxy_status = false
-    else :
-      proxy_status = True
-
-    opener = $this->_urllib.OpenerDirector()
-    opener.add_handler(http_handler)
-    opener.add_handler(https_handler)
-
-    if proxy_status is True :
-      proxy_handler = $this->_urllib.ProxyHandler({'http':str(http_proxy),'https': str(https_proxy)})
-      opener.add_handler(proxy_handler)
-
-    if use_gzip_compression is null:
-      use_gzip = $this->_use_gzip
-    } else {
-      use_gzip = use_gzip_compression
-
-    # Set up compression
-    if use_gzip and not post_data:
-      opener.addheaders.append(('Accept-Encoding', 'gzip'))
-
-    if $this->_oauth_consumer is not null:
-      if post_data and http_method == "POST":
-        parameters = post_data.copy()
-
-      req = oauth.Request.from_consumer_and_token($this->_oauth_consumer,
-                                                  token=$this->_oauth_token,
-                                                  http_method=http_method,
-                                                  http_url=url, parameters=parameters)
-
-      req.sign_request($this->_signature_method_hmac_sha1, $this->_oauth_consumer, $this->_oauth_token)
-
-      headers = req.to_header()
-
-      if http_method == "POST":
-        encoded_post_data = req.to_postdata()
-      } else {
-        encoded_post_data = null
-        url = req.to_url()
-    } else {
-      url = $this->_BuildUrl(url, extra_params=extra_params)
-      encoded_post_data = $this->_EncodePostData(post_data)
-
-    # Open and return the URL immediately if we're not going to cache
-    if encoded_post_data or no_cache or not $this->_cache or not $this->_cache_timeout:
-      response = opener.open(url, encoded_post_data)
-      url_data = $this->_DecompressGzippedResponse(response)
-      opener.close()
-    } else {
-      # Unique keys are a combination of the url and the oAuth Consumer Key
-      if $this->_consumer_key:
-        key = $this->_consumer_key + ':' + url
-      } else {
-        key = url
-
-      # See if it has been cached before
-      last_cached = $this->_cache.GetCachedTime(key)
-
-      # If the cached version is outdated then fetch another and store it
-      if not last_cached or time.time() >= last_cached + $this->_cache_timeout:
-        try:
-          response = opener.open(url, encoded_post_data)
-          url_data = $this->_DecompressGzippedResponse(response)
-          $this->_cache.Set(key, url_data)
-        except urllib2.HTTPError, e:
-          print e
-        opener.close()
-      } else {
-        url_data = $this->_cache.Get(key)
-
-    # Always return the latest version
-    return url_data
+    /**
+     * Raises a TwitterError if twitter returns an error message.
+     * @params
+     * @throws League\Twitter\Exception Error from the JSON API
+     */
+    public function checkForTwitterError($data)
+    {
+        # Twitter errors are relatively unlikely, so it is faster
+        # to check first, rather than try and catch the exception
+        if (array_key_exists('error', $data)) {
+            throw new Exception($data['error']);
+        }
+        if (array_key_exists('errors', $data)) {
+            throw new Exception($data['errors']);
+        }
+    }
+}
