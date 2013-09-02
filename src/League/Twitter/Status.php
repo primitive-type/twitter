@@ -502,203 +502,190 @@ class Status
         $this->possibly_sensitive = $possibly_sensitive;
     }
 
+    /**
+     * Get the scopes for a status
+     * @return string
+     */
     public function getScopes()
     {
         return $this->scopes;
     }
 
+    /**
+     * Set the scopes for a status
+     * @param string $scopes
+     */
     public function setScopes($scopes)
     {
         $this->scopes = $scopes;
     }
 
-    public function getWithheld_copyright()
+    /**
+     * Get the withheld copyright status of a status
+     * @return boolean
+     */
+    public function getWithheldCopyright()
     {
         return $this->withheld_copyright;
     }
 
-    public function setWithheld_copyright($withheld_copyright)
+    /**
+     * Set the withheld copyright status of a status
+     * @param boolean $withheld_copyright
+     */
+    public function setWithheldCopyright($withheld_copyright)
     {
         $this->withheld_copyright = $withheld_copyright;
     }
 
-    public function getWithheld_in_countries()
+    /**
+     * Get the countries where the status is withheld
+     * @return string
+     */
+    public function getWithheldInCountries()
     {
         return $this->withheld_in_countries;
     }
 
-    public function setWithheld_in_countries($withheld_in_countries)
+    /**
+     * Set the countries where the status is withheld
+     * @param string $withheld_in_countries
+     */
+    public function setWithheldInCountries($withheld_in_countries)
     {
         $this->withheld_in_countries = $withheld_in_countries;
     }
 
-    public function getWithheld_scope()
+    /**
+     * Get the scopes in which the status is withheld
+     * @return string
+     */
+    public function getWithheldScope()
     {
         return $this->withheld_scope;
     }
 
-    public function setWithheld_scope($withheld_scope)
+    /**
+     * Set the scopes in which the status is withheld
+     * @param string $withheld_scope
+     */
+    public function setWithheldScope($withheld_scope)
     {
         $this->withheld_scope = $withheld_scope;
     }
 
+    /**
+     * A string representation of the Status instance
+     * @return string
+     */
     public function __toString()
     {
-    '''A string representation of this twitter.Status instance.
-
-    The return value is the same as the JSON string representation.
-
-        returns:
-      A string representation of this twitter.Status instance.
-    '''
-        return $this->AsJsonString();
+        return $this->toJson();
     }
 
-    public function AsJsonString(
-    '''A JSON string representation of this twitter.Status instance.
-
-        returns:
-      A JSON string representation of this twitter.Status instance
-   '''
-        return simplejson.dumps($this->AsDict(), sort_keys=True);
-    }
-
-    public function AsDict()
-    '''A dict representation of this twitter.Status instance.
-
-    The return value uses the same key names as the JSON representation.
-
-        return:
-      A dict representing this twitter.Status instance
-    '''
-    data = {}
-    if $this->created_at:
-      data['created_at'] = $this->created_at
-    if $this->favorited:
-      data['favorited'] = $this->favorited
-    if $this->favorite_count:
-      data['favorite_count'] = $this->favorite_count
-    if $this->id:
-      data['id'] = $this->id
-    if $this->text:
-      data['text'] = $this->text
-    if $this->location:
-      data['location'] = $this->location
-    if $this->user:
-      data['user'] = $this->user.AsDict()
-    if $this->in_reply_to_screen_name:
-      data['in_reply_to_screen_name'] = $this->in_reply_to_screen_name
-    if $this->in_reply_to_user_id:
-      data['in_reply_to_user_id'] = $this->in_reply_to_user_id
-    if $this->in_reply_to_status_id:
-      data['in_reply_to_status_id'] = $this->in_reply_to_status_id
-    if $this->truncated is not None:
-      data['truncated'] = $this->truncated
-    if $this->retweeted is not None:
-      data['retweeted'] = $this->retweeted
-    if $this->favorited is not None:
-      data['favorited'] = $this->favorited
-    if $this->source:
-      data['source'] = $this->source
-    if $this->geo:
-      data['geo'] = $this->geo
-    if $this->place:
-      data['place'] = $this->place
-    if $this->coordinates:
-      data['coordinates'] = $this->coordinates
-    if $this->contributors:
-      data['contributors'] = $this->contributors
-    if $this->hashtags:
-      data['hashtags'] = [h.text for h in $this->hashtags]
-    if $this->retweeted_status:
-      data['retweeted_status'] = $this->retweeted_status.AsDict()
-    if $this->retweet_count:
-      data['retweet_count'] = $this->retweet_count
-    if $this->urls:
-      data['urls'] = dict([(url.url, url.expanded_url) for url in $this->urls])
-    if $this->user_mentions:
-      data['user_mentions'] = [um.AsDict() for um in $this->user_mentions]
-    if $this->current_user_retweet:
-      data['current_user_retweet'] = $this->current_user_retweet
-    if $this->possibly_sensitive:
-      data['possibly_sensitive'] = $this->possibly_sensitive
-    if $this->scopes:
-      data['scopes'] = $this->scopes
-    if $this->withheld_copyright:
-      data['withheld_copyright'] = $this->withheld_copyright
-    if $this->withheld_in_countries:
-      data['withheld_in_countries'] = $this->withheld_in_countries
-    if $this->withheld_scope:
-      data['withheld_scope'] = $this->withheld_scope
-        return data
-
-  @staticmethod
-    }
-
-    public function NewFromJsonDict(data)
+    /**
+     * String representation of the Status instance
+     * @return string
+     */
+    public function toJson()
     {
-    '''Create a new instance based on a JSON dict.
+        return json_encode($this->toArray());
+    }
 
-    Args:
-      data: A JSON dict, as converted from the JSON in the twitter API
-        returns:
-      A twitter.Status instance
-    '''
-    if 'user' in data:
-      user = User.NewFromJsonDict(data['user'])
-    else:
-      user = None
-    if 'retweeted_status' in data:
-      retweeted_status = Status.NewFromJsonDict(data['retweeted_status'])
-    else:
-      retweeted_status = None
-
-    if 'current_user_retweet' in data:
-      current_user_retweet = data['current_user_retweet']['id']
-    else:
-      current_user_retweet = None
-
-    urls = None
-    user_mentions = None
-    hashtags = None
-    media = None
-    if 'entities' in data:
-      if 'urls' in data['entities']:
-        urls = [Url.NewFromJsonDict(u) for u in data['entities']['urls']]
-      if 'user_mentions' in data['entities']:
-        user_mentions = [User.NewFromJsonDict(u) for u in data['entities']['user_mentions']]
-      if 'hashtags' in data['entities']:
-        hashtags = [Hashtag.NewFromJsonDict(h) for h in data['entities']['hashtags']]
-      if 'media' in data['entities']:
-        media = data['entities']['media']
-      else:
-        media = []
-        return Status(created_at=data.get('created_at', None),
-                  favorited=data.get('favorited', None),
-                  favorite_count=data.get('favorite_count', None),
-                  id=data.get('id', None),
-                  text=data.get('text', None),
-                  location=data.get('location', None),
-                  in_reply_to_screen_name=data.get('in_reply_to_screen_name', None),
-                  in_reply_to_user_id=data.get('in_reply_to_user_id', None),
-                  in_reply_to_status_id=data.get('in_reply_to_status_id', None),
-                  truncated=data.get('truncated', None),
-                  retweeted=data.get('retweeted', None),
-                  source=data.get('source', None),
-                  user=user,
-                  urls=urls,
-                  user_mentions=user_mentions,
-                  hashtags=hashtags,
-                  media=media,
-                  geo=data.get('geo', None),
-                  place=data.get('place', None),
-                  coordinates=data.get('coordinates', None),
-                  contributors=data.get('contributors', None),
-                  retweeted_status=retweeted_status,
-                  current_user_retweet=current_user_retweet,
-                  retweet_count=data.get('retweet_count', None),
-                  possibly_sensitive=data.get('possibly_sensitive', None),
-                  scopes=data.get('scopes', None),
-                  withheld_copyright=data.get('withheld_copyright', None),
-                  withheld_in_countries=data.get('withheld_in_countries', None),
-                  withheld_scope=data.get('withheld_scope', None))
+    /**
+     * An array representation of the twitter status instance
+     * @return array $data
+     */
+    public function toArray()
+    {
+        $data = array();
+        if($this->created_at !== null) {
+            $data['created_at'] = $this->created_at;
+        }
+        if($this->favorited !== null) {
+            $data['favorited'] = $this->favorited;
+        }
+        if($this->favorite_count !== null) {
+            $data['favorite_count'] = $this->favorite_count;
+        }
+        if($this->id !== null) {
+            $data['id'] = $this->id;
+        }
+        if($this->text !== null) {
+            $data['text'] = $this->text;
+        }
+        if($this->location !== null) {
+            $data['location'] = $this->location;
+        }
+        if($this->user !== null) {
+            $data['user'] = $this->user.AsDict( !== null);
+        }
+        if($this->in_reply_to_screen_name !== null) {
+            $data['in_reply_to_screen_name'] = $this->in_reply_to_screen_name;
+        }
+        if($this->in_reply_to_user_id !== null) {
+            $data['in_reply_to_user_id'] = $this->in_reply_to_user_id;
+        }
+        if($this->in_reply_to_status_id !== null) {
+            $data['in_reply_to_status_id'] = $this->in_reply_to_status_id;
+        }
+        if($this->truncated !== null) {
+            $data['truncated'] = $this->truncated;
+        }
+        if($this->retweeted !== null) {
+            $data['retweeted'] = $this->retweeted;
+        }
+        if($this->favorited !== null) {
+            $data['favorited'] = $this->favorited;
+        }
+        if($this->source !== null) {
+            $data['source'] = $this->source;
+        }
+        if($this->geo !== null) {
+            $data['geo'] = $this->geo;
+        }
+        if($this->place !== null) {
+            $data['place'] = $this->place;
+        }
+        if($this->coordinates !== null) {
+            $data['coordinates'] = $this->coordinates;
+        }
+        if($this->contributors !== null) {
+            $data['contributors'] = $this->contributors;
+        }
+        if($this->hashtags !== null) {
+            $data['hashtags'] = [h.text for h in $this->hashtags];
+        }
+        if($this->retweeted_status !== null) {
+            $data['retweeted_status'] = $this->retweeted_status->AsDict();
+        }
+        if($this->retweet_count !== null) {
+            $data['retweet_count'] = $this->retweet_count;
+        }
+        if($this->urls !== null) {
+            $data['urls'] = dict([(url.url, url.expanded_url) for url in $this->urls]);
+        }
+        if($this->user_mentions !== null) {
+            $data['user_mentions'] = [um.AsDict() for um in $this->user_mentions];
+        }
+        if($this->current_user_retweet !== null) {
+            $data['current_user_retweet'] = $this->current_user_retweet;
+        }
+        if($this->possibly_sensitive !== null) {
+            $data['possibly_sensitive'] = $this->possibly_sensitive;
+        }
+        if($this->scopes !== null) {
+            $data['scopes'] = $this->scopes;
+        }
+        if($this->withheld_copyright !== null) {
+            $data['withheld_copyright'] = $this->withheld_copyright;
+        }
+        if($this->withheld_in_countries !== null) {
+            $data['withheld_in_countries'] = $this->withheld_in_countries;
+        }
+        if($this->withheld_scope !== null) {
+            $data['withheld_scope'] = $this->withheld_scope;
+        }
+        return $data;
+    }
+}
