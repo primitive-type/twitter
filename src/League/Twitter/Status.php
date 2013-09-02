@@ -165,11 +165,19 @@ class Status
         $this->in_reply_to_screen_name = in_reply_to_screen_name;
     }
 
+    /**
+     * Get the user id of the original status that was replied to
+     * @return int
+     */
     public function getInReplyToUserId()
     {
         return $this->in_reply_to_user_id;
     }
 
+    /**
+     * Set the user id of the original status that was replied to
+     * @param int $in_reply_to_user
+     */
     public function setInReplyToUserId($in_reply_to_user_id)
     {
         $this->in_reply_to_user_id = in_reply_to_user_id;
@@ -368,72 +376,128 @@ class Status
         $this->geo = $geo;
     }
 
+    /**
+     * Return the place from the status
+     * @return string
+     */
     public function getPlace()
     {
         return $this->place;
     }
 
+    /**
+     * Set the place of the status update
+     * @param string $place
+     */
     public function setPlace($place)
     {
         $this->place = $place;
     }
 
+    /**
+     * Get the coordinates from where the status was updated
+     * @return string
+     */
     public function getCoordinates()
     {
         return $this->coordinates;
     }
 
+    /**
+     * Set the coordinates corresponding to a status update
+     * @param string $coordinates
+     */
     public function setCoordinates($coordinates)
     {
         $this->coordinates = $coordinates;
     }
 
+    /**
+     * Get a list of contributors
+     * @return string
+     */
     public function getContributors()
     {
         return $this->contributors;
     }
 
+    /**
+     * Set a list of contributors
+     * @param string $contributors
+     */
     public function setContributors($contributors)
     {
         $this->contributors = $contributors;
     }
 
-    public function getRetweeted_status()
+    /**
+     * Get the retweet status of a status update
+     * @return boolean
+     */
+    public function getRetweetedStatus()
     {
         return $this->retweeted_status;
     }
 
-    public function setRetweeted_status($retweeted_status)
+    /**
+     * Set the retweet status of a status update
+     * @param boolean $retweeted_status
+     */
+    public function setRetweetedStatus($retweeted_status)
     {
         $this->retweeted_status = $retweeted_status;
     }
 
+    /**
+     * Get the retweet count of a status
+     * @return int
+     */
     public function getRetweetCount()
     {
         return $this->retweet_count;
     }
 
+    /**
+     * Set the retweet count of a status
+     * @param int $retweet_count
+     */
     public function setRetweetCount($retweet_count)
     {
         $this->retweet_count = $retweet_count;
     }
 
-    public function getCurrent_user_retweet()
+    /**
+     * Return tweets the current user has retweeted
+     * @return boolean
+     */
+    public function getCurrentUserRetweet()
     {
         return $this->current_user_retweet;
     }
 
-    public function setCurrent_user_retweet($current_user_retweet)
+    /**
+     * Set the option to return tweets current user has retweed
+     * @param boolean $current_user_retweet
+     */
+    public function setCurrentUserRetweet($current_user_retweet)
     {
         $this->current_user_retweet = $current_user_retweet;
     }
 
-    public function getPossibly_sensitive()
+    /**
+     * Return the sensitivity status of a particular status
+     * @return boolean
+     */
+    public function getPossiblySensitive()
     {
         return $this->possibly_sensitive;
     }
 
-    public function setPossibly_sensitive($possibly_sensitive)
+    /**
+     * Set the sensitivity status for a status update
+     * @param boolean $possibly_sensitive
+     */
+    public function setPossiblySensitive($possibly_sensitive)
     {
         $this->possibly_sensitive = $possibly_sensitive;
     }
