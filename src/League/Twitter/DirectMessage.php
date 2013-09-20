@@ -225,6 +225,6 @@ class DirectMessage
      */
     public function toArray()
     {
-        return get_object_vars($this);
+        return array_filter(get_object_vars($this));
     }
 }
