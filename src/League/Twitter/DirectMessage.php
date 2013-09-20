@@ -188,6 +188,9 @@ class DirectMessage
 
     /**
      * This may not be necessary to bring over from the Python lib - thoughts?
+     * 
+     * @param DirectMessage $other 
+     * @return bool
      */
     public function notEquals($other)
     {
@@ -196,6 +199,9 @@ class DirectMessage
 
     /**
      * This may not be necessary to bring over from the Python lib - thoughts?
+     * 
+     * @param DirectMessage $other 
+     * @return bool
      */
     public function equals($other)
     {
@@ -204,6 +210,8 @@ class DirectMessage
 
     /**
      * Returns a JSON string representation of this twitter.DirectMessage instance
+     * 
+     * @return string
      */
     public function toJson()
     {
@@ -212,6 +220,8 @@ class DirectMessage
 
     /**
      * Returns an array representation of this twitter.DirectMessage instance
+     * 
+     * @return array
      */
     public function toArray()
     {
