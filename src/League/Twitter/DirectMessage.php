@@ -187,28 +187,6 @@ class DirectMessage
     }
 
     /**
-     * This may not be necessary to bring over from the Python lib - thoughts?
-     * 
-     * @param DirectMessage $other 
-     * @return bool
-     */
-    public function notEquals($other)
-    {
-        return (!$this->equals($other));
-    }
-
-    /**
-     * This may not be necessary to bring over from the Python lib - thoughts?
-     * 
-     * @param DirectMessage $other 
-     * @return bool
-     */
-    public function equals($other)
-    {
-        return $this == $other;
-    }
-
-    /**
      * Returns a JSON string representation of this twitter.DirectMessage instance
      * 
      * @return string
