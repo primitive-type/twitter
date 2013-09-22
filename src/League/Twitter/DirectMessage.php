@@ -1,4 +1,5 @@
-<?php namespace League\Twitter;
+<?php
+namespace League\Twitter;
 
 /**
  * A class representing the DirectMessage structure used by the twitter API.
@@ -46,14 +47,13 @@ class DirectMessage
     public function __construct(array $data)
     {
         $this->text = isset($data['text']) ? $data['text'] : null;
-        $this->created_at = isset($data['created_at']) : $data['created_at'] : null;
-        $this->recipient_id = isset($data['recipient_id']) : $data['recipient_id'] : null;
-        $this->sender_id = isset($data['sender_id']) : $data['sender_id'] : null;
-        $this->sender_screen_name = isset($data['sender_screen_name']) : $data['sender_screen_name'] : null;
-        $this->id = isset($data['id']) : $data['id'] : null;
-        $this->recipient_screen_name = isset($data['recipient_screen_name']) : $data['recipient_screen_name'] : null;
+        $this->created_at = isset($data['created_at']) ? $data['created_at'] : null;
+        $this->recipient_id = isset($data['recipient_id']) ? $data['recipient_id'] : null;
+        $this->sender_id = isset($data['sender_id']) ? $data['sender_id'] : null;
+        $this->sender_screen_name = isset($data['sender_screen_name']) ? $data['sender_screen_name'] : null;
+        $this->id = isset($data['id']) ? $data['id'] : null;
+        $this->recipient_screen_name = isset($data['recipient_screen_name']) ? $data['recipient_screen_name'] : null;
     }
-
 
     /**
      * Get the unique id of this direct message.
@@ -70,7 +70,8 @@ class DirectMessage
      *
      * @return void
      */
-    public function setId(id) {
+    public function setId($id)
+    {
         return $this->id = $id;
     }
 
@@ -110,177 +111,98 @@ class DirectMessage
      */
     public function getSenderId()
     {
-    
+        return $this->sender_id;
+    }
 
-    Returns:
-      The unique sender id of this direct message
-    '''
-    return $this->_sender_id
-
+    /**
+     * Set the unique sender id of this direct message
+     */
     public function setSenderId($sender_id)
     {
-
-    Args:
-      sender_id:
-        The unique sender id of this direct message
-    '''
-    $this->_sender_id = sender_id
-
-  sender_id = property(GetSenderId, SetSenderId,
-                doc='The unique sender id of this direct message.')
+        $this->sender_id = $sender_id;
+    }
 
     /**
      * Get the unique sender screen name of this direct message.
      */
     public function getSenderScreenName()
     {
-    
+        return $this->sender_screen_name;
+    }
 
-    Returns:
-      The unique sender screen name of this direct message
-    '''
-    return $this->_sender_screen_name
-
+    /**
+     * Sets the unique sender screen name of this direct message
+     */
     public function setSenderScreenName($sender_screen_name)
     {
+        $this->sender_screen_name = $sender_screen_name;
+    }
 
-    Args:
-      sender_screen_name:
-        The unique sender screen name of this direct message
-    '''
-    $this->_sender_screen_name = sender_screen_name
-
-  sender_screen_name = property(GetSenderScreenName, SetSenderScreenName,
-                doc='The unique sender screen name of this direct message.')
-
-        /**
-         * Get the unique recipient id of this direct message.
-         */
+    /**
+     * Get the unique recipient id of this direct message.
+     */
     public function getRecipientId()
     {
-    
+        return $this->recipient_id;
+    }
 
-    Returns:
-      The unique recipient id of this direct message
-    '''
-    return $this->_recipient_id
-
+    /**
+     * Set the unique recipient id of this direct message
+     */
     public function setRecipientId($recipient_id)
     {
-
-    Args:
-      recipient_id:
-        The unique recipient id of this direct message
-    '''
-    $this->_recipient_id = recipient_id
-
-  recipient_id = property(GetRecipientId, SetRecipientId,
-                doc='The unique recipient id of this direct message.')
+        $this->recipient_id = $recipient_id;
+    }
 
     /**
      * Get the unique recipient screen name of this direct message.
      */
     public function getRecipientScreenName()
     {
-    
-
-    Returns:
-      The unique recipient screen name of this direct message
-    '''
-    return $this->_recipient_screen_name
-
-    public function setRecipientScreenName($recipient_screen_name)
-    {
-
-    Args:
-      recipient_screen_name:
-        The unique recipient screen name of this direct message
-    '''
-    $this->_recipient_screen_name = recipient_screen_name
-
-  recipient_screen_name = property(GetRecipientScreenName, SetRecipientScreenName,
-                doc='The unique recipient screen name of this direct message.')
-
-        /**
-         * Get the text of this direct message.
-         */
-    public function getText()
-    {
-    
-
-    Returns:
-      The text of this direct message.
-    '''
-    return $this->_tex
-
-
-
-    Args:
-      text:
-        The text of this direct message
-    '''
-    $this->_text = text
-
-  text = property(GetText, SetText,
-                  doc='The text of this direct message')
-
-  def __ne__(self, other):
-    return not $this->__eq__(other)
-
-  def __eq__(self, other):
-    try:
-      return other and \
-          $this->id == other.id and \
-          $this->created_at == other.created_at and \
-          $this->sender_id == other.sender_id and \
-          $this->sender_screen_name == other.sender_screen_name and \
-          $this->recipient_id == other.recipient_id and \
-          $this->recipient_screen_name == other.recipient_screen_name and \
-          $this->text == other.text
-    except AttributeError:
-      return False
-
-  def __str__(self):
-    '''A string representation of this twitter.DirectMessage instance.
-
-    The return value is the same as the JSON string representation.
-
-    Returns:
-      A string representation of this twitter.DirectMessage instance.
-    '''
-    return $this->AsJsonString()
-
-  def AsJsonString(self):
-    '''A JSON string representation of this twitter.DirectMessage instance.
-
-    Returns:
-      A JSON string representation of this twitter.DirectMessage instance
-   '''
-    return simplejson.dumps($this->AsDict(), sort_keys=True)
-
-    public function toArray() {
-        '''A dict representation of this twitter.DirectMessage instance.
-
-        The return value uses the same key names as the JSON representation.
-
-        Return:
-          A dict representing this twitter.DirectMessage instance
-        '''
-        data = {}
-        if $this->id:
-          data['id'] = $this->id
-        if $this->created_at:
-          data['created_at'] = $this->created_at
-        if $this->sender_id:
-          data['sender_id'] = $this->sender_id
-        if $this->sender_screen_name:
-          data['sender_screen_name'] = $this->sender_screen_name
-        if $this->recipient_id:
-          data['recipient_id'] = $this->recipient_id
-        if $this->recipient_screen_name:
-          data['recipient_screen_name'] = $this->recipient_screen_name
-        if $this->text:
-          data['text'] = $this->text
-        return data
+        return $this->recipient_screen_name;
     }
 
+    /**
+     * Set the unique recipient screen name of this direct message.
+     */
+    public function setRecipientScreenName($recipient_screen_name)
+    {
+        $this->recipient_screen_name = $recipient_screen_name;
+    }
+
+    /**
+     * Get the text of this direct message.
+     */
+    public function getText()
+    {
+        return $this->text;
+    }
+
+    /**
+     * Set the text of this direct message
+     */
+    public function setText($text)
+    {
+        $this->text = $text;
+    }
+
+    /**
+     * Returns a JSON string representation of this twitter.DirectMessage instance
+     * 
+     * @return string
+     */
+    public function toJson()
+    {
+        return json_encode($this->toArray());
+    }
+
+    /**
+     * Returns an array representation of this twitter.DirectMessage instance
+     * 
+     * @return array
+     */
+    public function toArray()
+    {
+        return array_filter(get_object_vars($this));
+    }
+}
